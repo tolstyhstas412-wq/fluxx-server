@@ -68,23 +68,27 @@ const server = http.createServer((req, res) => {
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
-            const now = new Date();
             messages.push({
                 id: Date.now(), from: data.from, to: data.to, text: data.text,
-                time: now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 reaction: null
             });
             saveDB();
             res.writeHead(200); res.end();
         });
     }
+    // --- ИСПРАВЛЕНИЕ РЕАКЦИЙ ---
     else if (req.url === '/addReaction' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
+            // Ищем сообщение как число
             const msg = messages.find(m => String(m.id) === String(data.id));
-            if (msg) { msg.reaction = data.reaction; saveDB(); }
+            if (msg) { 
+                msg.reaction = data.reaction; 
+                saveDB(); 
+                console.log("Реакция сохранена!");
+            }
             res.writeHead(200); res.end();
         });
     }
