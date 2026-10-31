@@ -207,8 +207,7 @@
         async function addReact(id, emoji) {
             if (CURRENT_CHAT === "999") return;
             await fetch('/addReaction', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id:id, reaction:emoji}) });
-            // ПРИНУДИТЕЛЬНОЕ ОБНОВЛЕНИЕ
-            lastCount = 0; 
+            lastCount = 0; // Принудительное обновление
             checkMsgs();
         }
 
