@@ -2,52 +2,79 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Fluxx</title>
+    <title>Fluxx • 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #17212b; --panel: #0e1621; --border: #242f3d; --accent: #00ffff; --text: #fff; --sub: #8b9bb4; --my-msg: #2b5278; --other-msg: #182533; }
+        :root { 
+            --bg: #050505; --glass: rgba(20, 20, 35, 0.6); --border: rgba(0, 255, 255, 0.3); 
+            --accent: #00ffff; --text: #fff; --sub: #8b9bb4; 
+            --my-msg: linear-gradient(135deg, #6200ea, #00ffff); --other-msg: rgba(30, 30, 50, 0.9); 
+            --glow: 0 0 20px rgba(0, 255, 255, 0.5); --premium: #ffaa00; --vip: #ff00ff;
+        }
+        body.light { --bg: #f0f2f5; --glass: rgba(255, 255, 255, 0.9); --border: rgba(0, 0, 0, 0.1); --text: #000; --sub: #666; --other-msg: rgba(255, 255, 255, 0.9); }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #030008 80%); transition: 0.3s; }
+        body.light { background-image: none; }
 
         /* ВХОД */
         #login { width: 100%; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: var(--panel); padding: 40px; border-radius: 15px; text-align: center; width: 350px; border: 1px solid var(--border); }
-        .login-box h1 { color: var(--accent); margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: white; }
-        .login-box button { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .box { background: var(--glass); border: 1px solid var(--border); backdrop-filter: blur(25px); padding: 50px; border-radius: 30px; text-align: center; width: 380px; box-shadow: var(--glow); animation: fadeIn 0.8s; }
+        .box h1 { font-size: 42px; font-weight: 800; color: var(--accent); text-shadow: var(--glow); margin-bottom: 10px; }
+        .box input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: var(--text); outline: none; transition: 0.3s; }
+        .box input:focus { border-color: var(--accent); box-shadow: var(--glow); }
+        .box button { width: 100%; padding: 15px; background: var(--accent); border: none; color: #000; border-radius: 10px; cursor: pointer; font-weight: 800; margin-top: 20px; transition: 0.3s; }
+        .box button:hover { transform: translateY(-3px); box-shadow: var(--glow); }
 
         /* ИНТЕРФЕЙС */
         #app { display: none; width: 100%; }
-        .sidebar-menu { width: 320px; background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
-        .menu-header { padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); cursor: pointer; }
-        .menu-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 20px; }
+        .sidebar-menu { width: 320px; background: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+        .menu-header { padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .menu-header:hover { background: rgba(255,255,255,0.05); }
+        .menu-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 20px; background-size: cover; background-position: center; }
         .menu-items { padding: 10px 0; }
-        .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: var(--text); }
-        .menu-item:hover { background: var(--panel); }
+        .menu-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; color: var(--text); }
+        .menu-item:hover { background: rgba(255,255,255,0.05); border-left: 3px solid var(--accent); }
         .menu-item .icon { font-size: 20px; width: 24px; text-align: center; color: var(--sub); }
 
-        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--panel); }
-        .chat-header { padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); font-weight: 700; }
-        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .message { padding: 10px 15px; border-radius: 12px; max-width: 70%; font-size: 15px; }
-        .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; }
-        .other-msg { background: var(--other-msg); align-self: flex-start; }
-        .input-area { padding: 15px; background: var(--bg); border-top: 1px solid var(--border); display: flex; gap: 10px; }
-        .input-area input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); color: white; outline: none; }
-        .input-area button { padding: 12px; border-radius: 10px; background: var(--accent); color: #000; border: none; cursor: pointer; font-weight: bold; }
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--panel); position: relative; }
+        .chat-header { padding: 20px 30px; background: var(--glass); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .chat-messages { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .message { padding: 12px 18px; border-radius: 18px; max-width: 65%; position: relative; font-size: 15px; border: 1px solid var(--border); transition: 0.2s; }
+        .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg-time { font-size: 10px; opacity: 0.7; float: right; margin-left: 10px; margin-top: 5px; }
 
-        .user-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
-        .user-item:hover { background: var(--panel); }
+        .input-area { padding: 20px 30px; background: var(--glass); border-top: 1px solid var(--border); display: flex; gap: 15px; }
+        .input-area input { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; outline: none; transition: 0.3s; }
+        .input-area button { padding: 15px; border-radius: 50%; background: var(--accent); color: #000; border: none; cursor: pointer; width: 50px; height: 50px; transition: 0.2s; }
+
+        .user-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .user-item:hover { background: rgba(0, 255, 255, 0.05); border-left: 3px solid var(--accent); }
         .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #6200ea, #00ffff); display: flex; justify-content: center; align-items: center; font-weight: bold; background-size: cover; background-position: center; }
+
+        /* ВНУТРЕННИЕ ОКНА (ПРОФИЛЬ, НАСТРОЙКИ И Т.Д.) */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--glass); border: 1px solid var(--border); padding: 40px; border-radius: 25px; width: 450px; text-align: center; box-shadow: var(--glow); position: relative; animation: slideUp 0.3s; }
+        .modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--sub); font-size: 24px; cursor: pointer; }
+        .modal-close:hover { color: var(--accent); }
+
+        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 20px auto; font-size: 40px; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #6200ea, #00ffff); border: 3px solid var(--border); background-size: cover; background-position: center; }
+        .info-row { display: flex; align-items: center; justify-content: space-between; margin: 15px 0; font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .info-row span:first-child { color: var(--sub); }
+        .info-row span:last-child { font-weight: bold; }
+        .bio-box { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 15px; padding: 15px; margin: 20px 0; font-style: italic; color: var(--sub); text-align: left; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
     <!-- ЭКРАН ВХОДА -->
     <div id="login">
-        <div class="login-box">
+        <div class="box">
             <h1>Fluxx</h1>
             <input type="text" id="name" placeholder="Имя">
-            <input type="text" id="phone" placeholder="Номер">
+            <input type="text" id="phone" placeholder="Номер (+7...)">
             <input type="password" id="pass" placeholder="Пароль">
             <button onclick="doLogin()">Войти в сеть</button>
         </div>
@@ -56,7 +83,7 @@
     <!-- ПРИЛОЖЕНИЕ -->
     <div id="app">
         <div class="sidebar-menu">
-            <div class="menu-header" onclick="alert('Профиль в разработке')">
+            <div class="menu-header" onclick="openProfileModal()">
                 <div class="menu-avatar" id="myAvatar">?</div>
                 <div>
                     <h3 id="myName" style="margin:0;">Имя</h3>
@@ -64,26 +91,95 @@
                 </div>
             </div>
             <div class="menu-items">
-                <div class="menu-item" onclick="alert('Создать группу')"><span class="icon">👥</span> Создать группу</div>
-                <div class="menu-item" onclick="alert('Контакты')"><span class="icon">👤</span> Контакты</div>
-                <div class="menu-item" onclick="alert('Настройки')"><span class="icon">⚙️</span> Настройки</div>
+                <div class="menu-item" onclick="openGroupModal()"><span class="icon">👥</span> Создать группу</div>
+                <div class="menu-item" onclick="openContactsModal()"><span class="icon">👤</span> Контакты</div>
+                <div class="menu-item" onclick="openSettingsModal()"><span class="icon">⚙️</span> Настройки</div>
             </div>
-            <div style="padding: 10px 20px; color: var(--sub); font-size: 12px; font-weight: bold; margin-top: 10px;">ЧАТЫ</div>
+            <div style="padding: 15px 20px; color: var(--sub); font-size: 12px; font-weight: bold;">ЧАТЫ</div>
             <div id="usersList"></div>
         </div>
 
         <div class="chat-area" id="chatPanel">
-            <div class="chat-header"><span id="chatTitle">Выберите чат</span></div>
+            <div class="chat-header">
+                <span id="chatTitle">Выберите чат</span>
+                <button id="infoBtn" style="display:none; background:rgba(255,255,255,0.1); border:1px solid var(--border); color:var(--text); cursor:pointer; padding:5px 15px; border-radius:10px;" onclick="openOtherProfile()">ℹ️ Профиль</button>
+            </div>
             <div class="chat-messages" id="msgBox"></div>
             <div class="input-area" id="inputArea" style="display:none;">
-                <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
+                <input type="text" id="msgInput" placeholder="Написать сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
                 <button onclick="sendMsg()">➤</button>
             </div>
         </div>
     </div>
 
+    <!-- МОДАЛЬНЫЕ ОКНА (СКРЫТЫ ПО УМОЛЧАНИЮ) -->
+    
+    <!-- Мой профиль -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('profileModal')">×</button>
+            <div class="profile-avatar" id="myAvatarModal">?</div>
+            <h2 id="myNameModal" style="margin: 0;">Имя</h2>
+            <div class="info-row"><span>@username:</span> <span id="myUsernameModal">@user</span></div>
+            <div class="info-row"><span>Телефон:</span> <span id="myPhoneModal">+7...</span></div>
+            <div class="bio-box" id="myBioModal">Привет!</div>
+            <button onclick="closeModal('profileModal')" style="padding:10px 25px; border:none; border-radius:10px; background:var(--accent); color:black; font-weight:bold; cursor:pointer;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Профиль другого -->
+    <div id="otherProfileModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('otherProfileModal')">×</button>
+            <div class="profile-avatar" id="otherAvatarModal">?</div>
+            <h2 id="otherNameModal" style="margin: 0;">Имя</h2>
+            <div class="info-row"><span>Телефон:</span> <span id="otherPhoneModal">+7...</span></div>
+            <div class="info-row"><span>Био:</span> <span id="otherBioModal">Привет!</span></div>
+            <button onclick="closeModal('otherProfileModal')" style="padding:10px 25px; border:none; border-radius:10px; background:var(--accent); color:black; font-weight:bold; cursor:pointer;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Настройки -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+            <h2>Настройки</h2>
+            <div style="display:flex; justify-content:space-between; margin:20px 0; padding:15px; background:rgba(0,0,0,0.2); border-radius:10px;">
+                <span>Светлая тема</span>
+                <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+            </div>
+            <div style="display:flex; justify-content:space-between; margin:20px 0; padding:15px; background:rgba(0,0,0,0.2); border-radius:10px;">
+                <span>Звук уведомлений</span>
+                <input type="checkbox" checked>
+            </div>
+            <button onclick="closeModal('settingsModal')" style="padding:10px 25px; border:none; border-radius:10px; background:var(--accent); color:black; font-weight:bold; cursor:pointer;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Создать группу -->
+    <div id="groupModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('groupModal')">×</button>
+            <h2>Создать группу</h2>
+            <input type="text" placeholder="Название группы" style="width:100%; padding:12px; margin:15px 0; border-radius:10px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:var(--text);">
+            <button onclick="closeModal('groupModal')" style="padding:10px 25px; border:none; border-radius:10px; background:var(--accent); color:black; font-weight:bold; cursor:pointer;">Создать</button>
+        </div>
+    </div>
+
+    <!-- Контакты -->
+    <div id="contactsModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('contactsModal')">×</button>
+            <h2>Контакты</h2>
+            <p style="color:var(--sub);">Список ваших контактов появится здесь.</p>
+            <button onclick="closeModal('contactsModal')" style="padding:10px 25px; border:none; border-radius:10px; background:var(--accent); color:black; font-weight:bold; cursor:pointer;">Закрыть</button>
+        </div>
+    </div>
+
     <script>
         let MY_PHONE = "", MY_NAME = "", CURRENT_CHAT = "", botMsgs = [], ALL_USERS = {};
+
+        function getTime() { return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
         async function doLogin() {
             const n = document.getElementById('name').value;
@@ -131,11 +227,10 @@
             document.getElementById('chatTitle').innerText = name;
             document.getElementById('inputArea').style.display = 'flex';
             document.getElementById('msgBox').innerHTML = '';
+            document.getElementById('infoBtn').style.display = phone === "999" ? 'none' : 'block';
             if (phone === "999" && botMsgs.length === 0) botMsgs.push({id:1, from:"999", to:MY_PHONE, text:"Привет! Я Fluxx Bot.", time:getTime()});
             renderMsgs(); 
         }
-
-        function getTime() { return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
         async function sendMsg() {
             const text = document.getElementById('msgInput').value.trim();
@@ -170,11 +265,41 @@
                 let timeStr = m.time || getTime();
                 box.innerHTML += `
                     <div class="message ${m.from === MY_PHONE ? 'my-msg' : 'other-msg'}">
-                        ${m.text} <span style="font-size:10px; opacity:0.7; float:right; margin-top:5px;">${timeStr}</span>
+                        ${m.text} <span class="msg-time">${timeStr}</span>
                     </div>
                 `;
             });
             box.scrollTop = box.scrollHeight;
+        }
+
+        // --- УПРАВЛЕНИЕ ОКНАМИ ---
+        function openProfileModal() {
+            document.getElementById('myAvatarModal').innerText = MY_NAME[0].toUpperCase();
+            document.getElementById('myNameModal').innerText = MY_NAME;
+            document.getElementById('myUsernameModal').innerText = "@" + MY_NAME.toLowerCase();
+            document.getElementById('myPhoneModal').innerText = "+" + MY_PHONE;
+            document.getElementById('myBioModal').innerText = "Привет, я использую Fluxx!";
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        function openOtherProfile() {
+            if (!CURRENT_CHAT || CURRENT_CHAT === "999") return;
+            const u = ALL_USERS[CURRENT_CHAT];
+            document.getElementById('otherAvatarModal').innerText = u.name[0].toUpperCase();
+            document.getElementById('otherNameModal').innerText = u.name;
+            document.getElementById('otherPhoneModal').innerText = "+" + CURRENT_CHAT;
+            document.getElementById('otherBioModal').innerText = u.bio || "Привет!";
+            document.getElementById('otherProfileModal').style.display = 'flex';
+        }
+
+        function openGroupModal() { document.getElementById('groupModal').style.display = 'flex'; }
+        function openContactsModal() { document.getElementById('contactsModal').style.display = 'flex'; }
+        function openSettingsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
+        
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light');
         }
     </script>
 </body>
