@@ -2,45 +2,125 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Fluxx</title>
+    <title>Fluxx Ultimate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root { --bg: #0e1621; --panel: #17212b; --border: #242f3d; --accent: #00ffff; --text: #fff; --sub: #8b9bb4; --my-msg: #2b5278; --other-msg: #182533; }
+        body.light { --bg: #f0f2f5; --panel: #fff; --border: #ddd; --text: #000; --sub: #666; --my-msg: #d1e7dd; --other-msg: #fff; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+        #login { width: 100%; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: var(--panel); padding: 40px; border-radius: 20px; border: 1px solid var(--border); text-align: center; width: 350px; }
+        .login-box h1 { color: var(--accent); margin-bottom: 20px; }
+        .login-box input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+        .login-box button { width: 100%; padding: 12px; margin-top: 10px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        #app { display: none; width: 100%; }
+        .sidebar { width: 320px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .profile-header { padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: #000; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; background-size: cover; background-position: center; position: relative; }
+        .online-dot { width: 12px; height: 12px; background: #10b981; border-radius: 50%; position: absolute; bottom: 0; right: 0; border: 2px solid var(--panel); }
+        .search-bar { padding: 10px; border-bottom: 1px solid var(--border); }
+        .search-bar input { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+        .user-list { overflow-y: auto; flex: 1; }
+        .user-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
+        .user-item:hover { background: rgba(128,128,128,0.1); }
+        
+        .chat-area { flex: 1; display: flex; flex-direction: column; }
+        .chat-header { padding: 15px 20px; background: var(--panel); border-bottom: 1px solid var(--border); font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 12px; max-width: 70%; word-wrap: break-word; position: relative; }
+        .my-msg { background: var(--my-msg); align-self: flex-end; border-bottom-right-radius: 2px; }
+        .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid var(--border); }
+        .msg-time { font-size: 10px; opacity: 0.6; float: right; margin-top: 5px; margin-left: 10px; }
+        .msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
+        .reactions { position: absolute; bottom: -15px; right: 10px; background: var(--panel); border: 1px solid var(--accent); border-radius: 20px; padding: 2px 8px; display: none; gap: 5px; font-size: 14px; }
+        .message:hover .reactions { display: flex; }
+        .reactions span { cursor: pointer; }
+
+        .input-area { padding: 15px; background: var(--panel); border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; }
+        .input-area input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; }
+        .input-area button { padding: 12px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; font-size: 18px; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: var(--panel); padding: 30px; border-radius: 20px; border: 1px solid var(--border); text-align: center; width: 350px; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
+        .action-btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; background: var(--accent); color: #000; font-weight: bold; cursor: pointer; }
+        .danger { background: #ef4444; color: #fff; }
+    </style>
 </head>
 <body>
     <div id="login">
-        <div class="box">
-            <h1>Fluxx</h1>
+        <div class="login-box">
+            <h1>Fluxx Ultimate</h1>
             <input type="text" id="name" placeholder="Имя">
-            <input type="text" id="phone" placeholder="Номер">
+            <input type="text" id="phone" placeholder="Номер телефона">
             <input type="password" id="pass" placeholder="Пароль">
             <button onclick="doLogin()">Войти в сеть</button>
         </div>
     </div>
 
     <div id="app">
-        <div class="sidebar-menu">
-            <div class="menu-header" onclick="alert('Профиль: ' + MY_NAME)">
-                <div class="menu-avatar" id="myAvatar">?</div>
+        <div class="sidebar">
+            <div class="profile-header" onclick="openModal('myProfile')">
+                <div class="avatar" id="myAvatar">?</div>
                 <div>
-                    <h3 id="myName" style="margin:0;">Имя</h3>
-                    <p id="myPhone" style="margin:5px 0 0; font-size:12px; color:var(--sub);">Номер</p>
+                    <h3 id="myName">Имя</h3>
+                    <p id="myPhone" style="font-size:12px; color:var(--sub);">Номер</p>
                 </div>
             </div>
-            <div class="menu-items">
-                <div class="menu-item">⚙️ Настройки</div>
-                <div class="menu-item">🗑️ Очистить чат</div>
-            </div>
-            <div style="padding: 15px 20px; color: var(--sub); font-size: 12px; font-weight: bold;">ЧАТЫ</div>
-            <div id="usersList"></div>
+            <div class="search-bar"><input type="text" id="searchInput" placeholder="Поиск..." oninput="filterUsers()"></div>
+            <div class="user-list" id="usersList"></div>
         </div>
 
         <div class="chat-area">
-            <div class="chat-header"><span id="chatTitle">Выберите чат</span></div>
-            <div class="chat-messages" id="msgBox"></div>
-            <div class="input-area" id="inputArea" style="display:none;">
+            <div class="chat-header">
+                <span id="chatTitle">Выберите чат</span>
+                <button id="profileBtn" style="display:none;" onclick="openModal('otherProfile')">ℹ️</button>
+            </div>
+            <div class="messages" id="msgBox"></div>
+            <div class="input-area" id="inputArea">
+                <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="sendImage(event)">
+                <button onclick="document.getElementById('imageInput').click()">📎</button>
                 <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
                 <button onclick="sendMsg()">➤</button>
             </div>
+        </div>
+    </div>
+
+    <div id="myProfile" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('myProfile')">×</button>
+            <div class="avatar" id="modalMyAvatar" style="width:80px; height:80px; margin:0 auto 15px auto;">?</div>
+            <h2 id="modalMyName">Имя</h2>
+            <p id="modalMyPhone">Номер</p>
+            <p id="modalMyBio" style="color:var(--sub);">Привет!</p>
+            <input type="file" id="avatarInput" accept="image/*" onchange="uploadAvatar(event)" style="display:none;">
+            <button class="action-btn" onclick="document.getElementById('avatarInput').click()">📷 Сменить аватар</button>
+            <button class="action-btn danger" onclick="logout()">🚪 Выйти</button>
+        </div>
+    </div>
+
+    <div id="otherProfile" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('otherProfile')">×</button>
+            <div class="avatar" id="modalOtherAvatar" style="width:80px; height:80px; margin:0 auto 15px auto;">?</div>
+            <h2 id="modalOtherName">Имя</h2>
+            <p id="modalOtherPhone">Номер</p>
+            <p id="modalOtherBio" style="color:var(--sub);">Привет!</p>
+            <button class="action-btn danger" onclick="clearChat()">🗑️ Очистить чат</button>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('settingsModal')">×</button>
+            <h2>Настройки</h2>
+            <label style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid var(--border);">
+                Светлая тема <input type="checkbox" onchange="document.body.classList.toggle('light')">
+            </label>
+            <button class="action-btn" onclick="closeModal('settingsModal')">Закрыть</button>
         </div>
     </div>
 
