@@ -35,7 +35,15 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             const data = JSON.parse(body);
             if (!users[data.phone]) {
-                users[data.phone] = { name: data.name, password: data.password, avatar: null };
+                users[data.phone] = { 
+                    name: data.name, 
+                    password: data.password, 
+                    avatar: null,
+                    username: "@" + data.name.toLowerCase().replace(/\s/g, ''),
+                    bio: "Привет, я использую Fluxx!",
+                    birthday: "01.01.2000",
+                    status: "user"
+                };
                 saveDB();
             }
             if (users[data.phone].password === data.password) {
@@ -51,13 +59,17 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify(users));
     }
-    else if (req.url === '/updateAvatar' && req.method === 'POST') {
+    else if (req.url === '/updateProfile' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
             if (users[data.phone]) {
-                users[data.phone].avatar = data.avatar;
+                if(data.avatar !== undefined) users[data.phone].avatar = data.avatar;
+                if(data.username) users[data.phone].username = data.username;
+                if(data.bio) users[data.phone].bio = data.bio;
+                if(data.birthday) users[data.phone].birthday = data.birthday;
+                if(data.status) users[data.phone].status = data.status;
                 saveDB();
             }
             res.writeHead(200); res.end();
@@ -76,19 +88,13 @@ const server = http.createServer((req, res) => {
             res.writeHead(200); res.end();
         });
     }
-    // --- ИСПРАВЛЕНИЕ РЕАКЦИЙ ---
     else if (req.url === '/addReaction' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
-            // Ищем сообщение как число
             const msg = messages.find(m => String(m.id) === String(data.id));
-            if (msg) { 
-                msg.reaction = data.reaction; 
-                saveDB(); 
-                console.log("Реакция сохранена!");
-            }
+            if (msg) { msg.reaction = data.reaction; saveDB(); }
             res.writeHead(200); res.end();
         });
     }
