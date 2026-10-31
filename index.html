@@ -4,58 +4,11 @@
     <meta charset="UTF-8">
     <title>Fluxx</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg: #050505; --panel: #0e1621; --border: #242f3d; --accent: #00ffff; --text: #fff; --sub: #8b9bb4; --my-msg: #2b5278; --other-msg: #182533; }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-
-        /* ВХОД */
-        #login { width: 100%; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: var(--panel); padding: 40px; border-radius: 15px; text-align: center; width: 350px; border: 1px solid var(--border); }
-        .login-box h1 { color: var(--accent); margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: white; }
-        .login-box button { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-        /* ИНТЕРФЕЙС */
-        #app { display: none; width: 100%; }
-        .sidebar-menu { width: 320px; background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
-        .menu-header { padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); cursor: pointer; }
-        .menu-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 20px; background-size: cover; background-position: center; }
-        .menu-items { padding: 10px 0; }
-        .menu-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
-        .menu-item:hover { background: var(--panel); }
-
-        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--panel); }
-        .chat-header { padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .message { padding: 10px 15px; border-radius: 12px; max-width: 70%; font-size: 15px; cursor: pointer; position: relative; }
-        .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 2px; }
-        .msg-time { font-size: 10px; opacity: 0.7; float: right; margin-left: 10px; margin-top: 5px; }
-
-        .input-area { padding: 15px; background: var(--bg); border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; position: relative; }
-        .input-area input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); color: white; outline: none; }
-        .input-area button { padding: 12px; border-radius: 10px; background: var(--accent); color: #000; border: none; cursor: pointer; font-weight: bold; }
-
-        .emoji-picker { position: absolute; bottom: 60px; left: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 15px; padding: 10px; display: none; flex-wrap: wrap; width: 250px; gap: 5px; z-index: 100; }
-        .emoji-picker span { cursor: pointer; font-size: 24px; padding: 5px; border-radius: 5px; }
-        .emoji-picker span:hover { background: var(--panel); }
-
-        .user-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
-        .user-item:hover { background: var(--panel); }
-        .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #6200ea, #00ffff); display: flex; justify-content: center; align-items: center; font-weight: bold; background-size: cover; background-position: center; }
-
-        /* МОДАЛЬНЫЕ ОКНА */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--bg); padding: 30px; border-radius: 15px; border: 1px solid var(--accent); text-align: center; width: 350px; position: relative; }
-        .modal-close { position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
-        .modal-btn { padding: 10px 20px; border: none; border-radius: 10px; background: var(--accent); color: black; font-weight: bold; cursor: pointer; margin-top: 20px; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- ЭКРАН ВХОДА -->
     <div id="login">
-        <div class="login-box">
+        <div class="box">
             <h1>Fluxx</h1>
             <input type="text" id="name" placeholder="Имя">
             <input type="text" id="phone" placeholder="Номер">
@@ -64,10 +17,9 @@
         </div>
     </div>
 
-    <!-- ПРИЛОЖЕНИЕ -->
     <div id="app">
         <div class="sidebar-menu">
-            <div class="menu-header" onclick="openModal('profileModal')">
+            <div class="menu-header" onclick="alert('Профиль: ' + MY_NAME)">
                 <div class="menu-avatar" id="myAvatar">?</div>
                 <div>
                     <h3 id="myName" style="margin:0;">Имя</h3>
@@ -75,192 +27,23 @@
                 </div>
             </div>
             <div class="menu-items">
-                <div class="menu-item" onclick="openModal('settingsModal')">⚙️ Настройки</div>
-                <div class="menu-item" onclick="clearHistory()">🗑️ Очистить чат</div>
+                <div class="menu-item">⚙️ Настройки</div>
+                <div class="menu-item">🗑️ Очистить чат</div>
             </div>
             <div style="padding: 15px 20px; color: var(--sub); font-size: 12px; font-weight: bold;">ЧАТЫ</div>
             <div id="usersList"></div>
         </div>
 
-        <div class="chat-area" id="chatPanel">
-            <div class="chat-header">
-                <span id="chatTitle">Выберите чат</span>
-                <button id="infoBtn" style="display:none; background:none; border:1px solid var(--accent); color:var(--accent); cursor:pointer; padding:5px 10px; border-radius:10px;" onclick="openModal('otherProfileModal')">ℹ️</button>
-            </div>
+        <div class="chat-area">
+            <div class="chat-header"><span id="chatTitle">Выберите чат</span></div>
             <div class="chat-messages" id="msgBox"></div>
             <div class="input-area" id="inputArea" style="display:none;">
-                <button onclick="toggleEmoji()" style="background:transparent; color:var(--text);">😀</button>
-                <div class="emoji-picker" id="emojiPicker">
-                    <span onclick="addEmoji('😀')">😀</span><span onclick="addEmoji('😂')">😂</span><span onclick="addEmoji('❤️')">❤️</span>
-                    <span onclick="addEmoji('🔥')">🔥</span><span onclick="addEmoji('👍')">👍</span><span onclick="addEmoji('🎉')">🎉</span>
-                </div>
                 <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
                 <button onclick="sendMsg()">➤</button>
             </div>
         </div>
     </div>
 
-    <!-- МОИ ПРОФИЛЬ -->
-    <div id="profileModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('profileModal')">×</button>
-            <div class="menu-avatar" id="modalAvatar" style="width:80px; height:80px; font-size:30px; margin:0 auto 15px auto;">?</div>
-            <h2 id="modalName">Имя</h2>
-            <p id="modalPhone" style="color:var(--sub);">Номер</p>
-            <button class="modal-btn" onclick="closeModal('profileModal')">Закрыть</button>
-        </div>
-    </div>
-
-    <!-- ПРОФИЛЬ ДРУГОГО -->
-    <div id="otherProfileModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('otherProfileModal')">×</button>
-            <div class="menu-avatar" id="otherAvatar" style="width:80px; height:80px; font-size:30px; margin:0 auto 15px auto;">?</div>
-            <h2 id="otherName">Имя</h2>
-            <p id="otherPhone" style="color:var(--sub);">Номер</p>
-            <button class="modal-btn" onclick="closeModal('otherProfileModal')">Закрыть</button>
-        </div>
-    </div>
-
-    <!-- НАСТРОЙКИ -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
-            <h2>Настройки</h2>
-            <div style="display:flex; justify-content:space-between; margin:20px 0; padding:10px; background:rgba(0,0,0,0.2); border-radius:10px;">
-                <span>Светлая тема</span>
-                <input type="checkbox" onchange="document.body.classList.toggle('light')">
-            </div>
-            <button class="modal-btn" onclick="closeModal('settingsModal')">Закрыть</button>
-        </div>
-    </div>
-
-    <script>
-        let MY_PHONE = "", MY_NAME = "", CURRENT_CHAT = "", botMsgs = [], ALL_USERS = {};
-
-        function getTime() { return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
-
-        async function doLogin() {
-            const n = document.getElementById('name').value;
-            const p = document.getElementById('phone').value;
-            const pass = document.getElementById('pass').value;
-            if (!n || !p || !pass) return alert("Заполни поля!");
-
-            const res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name:n, phone:p, password:pass}) });
-            const data = await res.json();
-            
-            if (data.status === 'ok') {
-                MY_PHONE = p; MY_NAME = n;
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                document.getElementById('myName').innerText = n;
-                document.getElementById('myPhone').innerText = p;
-                document.getElementById('myAvatar').innerText = n[0].toUpperCase();
-                loadUsers(); 
-                setInterval(() => { if (CURRENT_CHAT && CURRENT_CHAT !== "999") checkMsgs(); }, 1000);
-            } else { alert(data.message); }
-        }
-
-        async function loadUsers() {
-            const res = await fetch('/getUsers');
-            ALL_USERS = await res.json();
-            const list = document.getElementById('usersList');
-            list.innerHTML = `<div class="user-item" onclick="openChat('999', 'Бот')"><div class="user-avatar" style="background:linear-gradient(135deg, #ec4899, #8b5cf6);">🤖</div><div>Fluxx Bot</div></div>`;
-            
-            for (const phone in ALL_USERS) {
-                if (phone === MY_PHONE) continue;
-                const u = ALL_USERS[phone];
-                let avStyle = u.avatar ? `background-image: url(${u.avatar});` : '';
-                list.innerHTML += `<div class="user-item" onclick="openChat('${phone}', '${u.name}')"><div class="user-avatar" style="${avStyle}">${u.avatar ? '' : u.name[0].toUpperCase()}</div><div>${u.name}</div></div>`;
-            }
-        }
-
-        function openChat(phone, name) {
-            CURRENT_CHAT = phone;
-            document.getElementById('chatTitle').innerText = name;
-            document.getElementById('inputArea').style.display = 'flex';
-            document.getElementById('msgBox').innerHTML = '';
-            document.getElementById('infoBtn').style.display = phone === "999" ? 'none' : 'block';
-            if (phone === "999" && botMsgs.length === 0) botMsgs.push({id:1, from:"999", to:MY_PHONE, text:"Привет! Я Fluxx Bot.", time:getTime()});
-            renderMsgs(); 
-        }
-
-        async function sendMsg() {
-            const text = document.getElementById('msgInput').value.trim();
-            if (!text || !CURRENT_CHAT) return;
-            if (CURRENT_CHAT === "999") {
-                botMsgs.push({id:Date.now(), from:MY_PHONE, to:"999", text:text, time:getTime()});
-                document.getElementById('msgInput').value = '';
-                renderMsgs();
-                setTimeout(() => { botMsgs.push({id:Date.now(), from:"999", to:MY_PHONE, text:"Интересно!", time:getTime()}); renderMsgs(); }, 1000);
-            } else {
-                await fetch('/sendMessage', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({from:MY_PHONE, to:CURRENT_CHAT, text:text}) });
-                document.getElementById('msgInput').value = '';
-                checkMsgs();
-            }
-        }
-
-        async function checkMsgs() {
-            if (!CURRENT_CHAT || CURRENT_CHAT === "999") return;
-            const res = await fetch(`/getMessages?user1=${MY_PHONE}&user2=${CURRENT_CHAT}`);
-            const msgs = await res.json();
-            renderMsgs(msgs);
-        }
-
-        function renderMsgs(msgs = null) {
-            let messages = msgs;
-            if (!messages) {
-                if (CURRENT_CHAT === "999") { messages = botMsgs; } else { return; }
-            }
-            const box = document.getElementById('msgBox');
-            box.innerHTML = '';
-            messages.forEach(m => {
-                let timeStr = m.time || getTime();
-                box.innerHTML += `
-                    <div class="message ${m.from === MY_PHONE ? 'my-msg' : 'other-msg'}">
-                        ${m.text} <span class="msg-time">${timeStr}</span>
-                    </div>
-                `;
-            });
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function openModal(id) {
-            if (id === 'profileModal') {
-                document.getElementById('modalAvatar').innerText = MY_NAME[0].toUpperCase();
-                document.getElementById('modalName').innerText = MY_NAME;
-                document.getElementById('modalPhone').innerText = "+" + MY_PHONE;
-            }
-            if (id === 'otherProfileModal') {
-                if (!CURRENT_CHAT || CURRENT_CHAT === "999") return;
-                const u = ALL_USERS[CURRENT_CHAT];
-                document.getElementById('otherAvatar').innerText = u.name[0].toUpperCase();
-                document.getElementById('otherName').innerText = u.name;
-                document.getElementById('otherPhone').innerText = "+" + CURRENT_CHAT;
-            }
-            document.getElementById(id).style.display = 'flex';
-        }
-
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        function toggleEmoji() {
-            const picker = document.getElementById('emojiPicker');
-            picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        function addEmoji(emoji) {
-            const input = document.getElementById('msgInput');
-            input.value += emoji;
-            input.focus();
-        }
-
-        async function clearHistory() {
-            if (!CURRENT_CHAT || CURRENT_CHAT === "999") return alert("Нельзя очистить этот чат.");
-            if (!confirm("Удалить всю историю с этим человеком?")) return;
-            
-            await fetch('/clearHistory', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({user1: MY_PHONE, user2: CURRENT_CHAT}) });
-            document.getElementById('msgBox').innerHTML = '';
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
