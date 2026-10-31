@@ -3,7 +3,7 @@ const fs = require('fs');
 
 let users = {};
 let messages = [];
-let typingUsers = {}; // Кто печатает
+let typingUsers = {};
 
 if (fs.existsSync('data.json')) {
     try {
@@ -36,7 +36,15 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             const data = JSON.parse(body);
             if (!users[data.phone]) {
-                users[data.phone] = { name: data.name, password: data.password, avatar: null };
+                users[data.phone] = { 
+                    name: data.name, 
+                    password: data.password, 
+                    avatar: null,
+                    username: "@" + data.name.toLowerCase().replace(/\s/g, ''),
+                    bio: "Привет, я использую Fluxx!",
+                    birthday: "01.01.2000",
+                    status: "user"
+                };
                 saveDB();
             }
             if (users[data.phone].password === data.password) {
@@ -52,12 +60,19 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify(users));
     }
-    else if (req.url === '/updateAvatar' && req.method === 'POST') {
+    else if (req.url === '/updateProfile' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
-            if (users[data.phone]) { users[data.phone].avatar = data.avatar; saveDB(); }
+            if (users[data.phone]) {
+                if(data.avatar !== undefined) users[data.phone].avatar = data.avatar;
+                if(data.username) users[data.phone].username = data.username;
+                if(data.bio) users[data.phone].bio = data.bio;
+                if(data.birthday) users[data.phone].birthday = data.birthday;
+                if(data.status) users[data.phone].status = data.status;
+                saveDB();
+            }
             res.writeHead(200); res.end();
         });
     }
@@ -85,7 +100,17 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             const data = JSON.parse(body);
             messages.push({ id: Date.now(), from: data.from, to: data.to, text: data.text, reaction: null });
-            delete typingUsers[data.from]; // Очищаем статус
+            delete typingUsers[data.from];
+            saveDB();
+            res.writeHead(200); res.end();
+        });
+    }
+    else if (req.url === '/clearHistory' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            const data = JSON.parse(body);
+            messages = messages.filter(m => !(m.from === data.user1 && m.to === data.user2) && !(m.from === data.user2 && m.to === data.user1));
             saveDB();
             res.writeHead(200); res.end();
         });
