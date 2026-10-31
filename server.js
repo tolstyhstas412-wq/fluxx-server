@@ -58,6 +58,21 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify(users));
     }
+    else if (req.url === '/updateProfile' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            const data = JSON.parse(body);
+            if (users[data.phone]) {
+                if(data.status) users[data.phone].status = data.status;
+                if(data.avatar) users[data.phone].avatar = data.avatar;
+                if(data.theme) users[data.phone].theme = data.theme;
+                saveDB();
+            }
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify({status: 'ok'}));
+        });
+    }
     else if (req.url === '/sendMessage' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
@@ -77,7 +92,6 @@ const server = http.createServer((req, res) => {
             res.end(JSON.stringify({status: 'ok', id: newMsg.id}));
         });
     }
-    // ОБРАБОТКА РЕАКЦИЙ
     else if (req.url === '/addReaction' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
@@ -99,4 +113,4 @@ const server = http.createServer((req, res) => {
     }
 });
 
-server.listen(3000, () => console.log('Fluxx запущен! http://localhost:3000'));
+server.listen(3000, () => console.log('Fluxx ULTIMATE запущен! http://localhost:3000'));
