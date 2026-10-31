@@ -9,12 +9,14 @@
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
+        /* ВХОД */
         #login { width: 100%; display: flex; justify-content: center; align-items: center; }
         .login-box { background: var(--panel); padding: 40px; border-radius: 15px; text-align: center; width: 350px; border: 1px solid var(--border); }
         .login-box h1 { color: var(--accent); margin-bottom: 20px; }
         .login-box input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: white; }
         .login-box button { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
+        /* ИНТЕРФЕЙС */
         #app { display: none; width: 100%; }
         .sidebar-menu { width: 320px; background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
         .menu-header { padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); cursor: pointer; }
@@ -42,12 +44,16 @@
         .user-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
         .user-item:hover { background: var(--panel); }
         .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #6200ea, #00ffff); display: flex; justify-content: center; align-items: center; font-weight: bold; background-size: cover; background-position: center; }
-        .unread-badge { background: #ef4444; color: white; border-radius: 10px; padding: 2px 8px; font-size: 12px; margin-left: auto; }
 
-        .typing-indicator { font-size: 12px; color: var(--accent); margin-left: 10px; display: none; }
+        /* МОДАЛЬНЫЕ ОКНА */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: var(--bg); padding: 30px; border-radius: 15px; border: 1px solid var(--accent); text-align: center; width: 350px; position: relative; }
+        .modal-close { position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
+        .modal-btn { padding: 10px 20px; border: none; border-radius: 10px; background: var(--accent); color: black; font-weight: bold; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
+    <!-- ЭКРАН ВХОДА -->
     <div id="login">
         <div class="login-box">
             <h1>Fluxx</h1>
@@ -58,9 +64,10 @@
         </div>
     </div>
 
+    <!-- ПРИЛОЖЕНИЕ -->
     <div id="app">
         <div class="sidebar-menu">
-            <div class="menu-header" onclick="openProfile()">
+            <div class="menu-header" onclick="openModal('profileModal')">
                 <div class="menu-avatar" id="myAvatar">?</div>
                 <div>
                     <h3 id="myName" style="margin:0;">Имя</h3>
@@ -68,7 +75,7 @@
                 </div>
             </div>
             <div class="menu-items">
-                <div class="menu-item" onclick="openSettings()">⚙️ Настройки</div>
+                <div class="menu-item" onclick="openModal('settingsModal')">⚙️ Настройки</div>
                 <div class="menu-item" onclick="clearHistory()">🗑️ Очистить чат</div>
             </div>
             <div style="padding: 15px 20px; color: var(--sub); font-size: 12px; font-weight: bold;">ЧАТЫ</div>
@@ -77,11 +84,8 @@
 
         <div class="chat-area" id="chatPanel">
             <div class="chat-header">
-                <div>
-                    <span id="chatTitle">Выберите чат</span>
-                    <span class="typing-indicator" id="typingIndicator">печатает...</span>
-                </div>
-                <button id="infoBtn" style="display:none; background:none; border:1px solid var(--accent); color:var(--accent); cursor:pointer; padding:5px 10px; border-radius:10px;" onclick="showProfile()">ℹ️</button>
+                <span id="chatTitle">Выберите чат</span>
+                <button id="infoBtn" style="display:none; background:none; border:1px solid var(--accent); color:var(--accent); cursor:pointer; padding:5px 10px; border-radius:10px;" onclick="openModal('otherProfileModal')">ℹ️</button>
             </div>
             <div class="chat-messages" id="msgBox"></div>
             <div class="input-area" id="inputArea" style="display:none;">
@@ -89,12 +93,45 @@
                 <div class="emoji-picker" id="emojiPicker">
                     <span onclick="addEmoji('😀')">😀</span><span onclick="addEmoji('😂')">😂</span><span onclick="addEmoji('❤️')">❤️</span>
                     <span onclick="addEmoji('🔥')">🔥</span><span onclick="addEmoji('👍')">👍</span><span onclick="addEmoji('🎉')">🎉</span>
-                    <span onclick="addEmoji('😎')">😎</span><span onclick="addEmoji('😭')">😭</span><span onclick="addEmoji('🤔')">🤔</span>
-                    <span onclick="addEmoji('💀')">💀</span><span onclick="addEmoji('👻')">👻</span><span onclick="addEmoji('🤖')">🤖</span>
                 </div>
-                <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="handleKeyPress(event)">
+                <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
                 <button onclick="sendMsg()">➤</button>
             </div>
+        </div>
+    </div>
+
+    <!-- МОИ ПРОФИЛЬ -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('profileModal')">×</button>
+            <div class="menu-avatar" id="modalAvatar" style="width:80px; height:80px; font-size:30px; margin:0 auto 15px auto;">?</div>
+            <h2 id="modalName">Имя</h2>
+            <p id="modalPhone" style="color:var(--sub);">Номер</p>
+            <button class="modal-btn" onclick="closeModal('profileModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- ПРОФИЛЬ ДРУГОГО -->
+    <div id="otherProfileModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('otherProfileModal')">×</button>
+            <div class="menu-avatar" id="otherAvatar" style="width:80px; height:80px; font-size:30px; margin:0 auto 15px auto;">?</div>
+            <h2 id="otherName">Имя</h2>
+            <p id="otherPhone" style="color:var(--sub);">Номер</p>
+            <button class="modal-btn" onclick="closeModal('otherProfileModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- НАСТРОЙКИ -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+            <h2>Настройки</h2>
+            <div style="display:flex; justify-content:space-between; margin:20px 0; padding:10px; background:rgba(0,0,0,0.2); border-radius:10px;">
+                <span>Светлая тема</span>
+                <input type="checkbox" onchange="document.body.classList.toggle('light')">
+            </div>
+            <button class="modal-btn" onclick="closeModal('settingsModal')">Закрыть</button>
         </div>
     </div>
 
@@ -103,35 +140,25 @@
 
         function getTime() { return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
-        function playSound() {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
-            osc.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-        }
-
         async function doLogin() {
             const n = document.getElementById('name').value;
             const p = document.getElementById('phone').value;
             const pass = document.getElementById('pass').value;
             if (!n || !p || !pass) return alert("Заполни поля!");
 
-            try {
-                const res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name:n, phone:p, password:pass}) });
-                const data = await res.json();
-                
-                if (data.status === 'ok') {
-                    MY_PHONE = p; MY_NAME = n;
-                    document.getElementById('login').style.display = 'none';
-                    document.getElementById('app').style.display = 'flex';
-                    document.getElementById('myName').innerText = n;
-                    document.getElementById('myPhone').innerText = p;
-                    document.getElementById('myAvatar').innerText = n[0].toUpperCase();
-                    loadUsers(); 
-                    setInterval(() => { if (CURRENT_CHAT && CURRENT_CHAT !== "999") checkMsgs(); }, 1000);
-                } else { alert(data.message); }
-            } catch(e) { alert("Сервер не отвечает. Подожди минуту."); }
+            const res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name:n, phone:p, password:pass}) });
+            const data = await res.json();
+            
+            if (data.status === 'ok') {
+                MY_PHONE = p; MY_NAME = n;
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+                document.getElementById('myName').innerText = n;
+                document.getElementById('myPhone').innerText = p;
+                document.getElementById('myAvatar').innerText = n[0].toUpperCase();
+                loadUsers(); 
+                setInterval(() => { if (CURRENT_CHAT && CURRENT_CHAT !== "999") checkMsgs(); }, 1000);
+            } else { alert(data.message); }
         }
 
         async function loadUsers() {
@@ -158,14 +185,6 @@
             renderMsgs(); 
         }
 
-        function handleKeyPress(e) { 
-            if (e.key === 'Enter') {
-                sendMsg();
-            } else {
-                fetch('/typing', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone: MY_PHONE}) });
-            }
-        }
-
         async function sendMsg() {
             const text = document.getElementById('msgInput').value.trim();
             if (!text || !CURRENT_CHAT) return;
@@ -173,7 +192,7 @@
                 botMsgs.push({id:Date.now(), from:MY_PHONE, to:"999", text:text, time:getTime()});
                 document.getElementById('msgInput').value = '';
                 renderMsgs();
-                setTimeout(() => { botMsgs.push({id:Date.now(), from:"999", to:MY_PHONE, text:"Интересно!", time:getTime()}); renderMsgs(); playSound(); }, 1000);
+                setTimeout(() => { botMsgs.push({id:Date.now(), from:"999", to:MY_PHONE, text:"Интересно!", time:getTime()}); renderMsgs(); }, 1000);
             } else {
                 await fetch('/sendMessage', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({from:MY_PHONE, to:CURRENT_CHAT, text:text}) });
                 document.getElementById('msgInput').value = '';
@@ -186,14 +205,6 @@
             const res = await fetch(`/getMessages?user1=${MY_PHONE}&user2=${CURRENT_CHAT}`);
             const msgs = await res.json();
             renderMsgs(msgs);
-            
-            const typingRes = await fetch('/getTyping');
-            const typing = await typingRes.json();
-            if (typing.includes(CURRENT_CHAT)) {
-                document.getElementById('typingIndicator').style.display = 'inline';
-            } else {
-                document.getElementById('typingIndicator').style.display = 'none';
-            }
         }
 
         function renderMsgs(msgs = null) {
@@ -206,7 +217,7 @@
             messages.forEach(m => {
                 let timeStr = m.time || getTime();
                 box.innerHTML += `
-                    <div class="message ${m.from === MY_PHONE ? 'my-msg' : 'other-msg'}" onclick="copyText('${m.text}')">
+                    <div class="message ${m.from === MY_PHONE ? 'my-msg' : 'other-msg'}">
                         ${m.text} <span class="msg-time">${timeStr}</span>
                     </div>
                 `;
@@ -214,10 +225,23 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        function copyText(text) {
-            navigator.clipboard.writeText(text);
-            alert("Скопировано: " + text);
+        function openModal(id) {
+            if (id === 'profileModal') {
+                document.getElementById('modalAvatar').innerText = MY_NAME[0].toUpperCase();
+                document.getElementById('modalName').innerText = MY_NAME;
+                document.getElementById('modalPhone').innerText = "+" + MY_PHONE;
+            }
+            if (id === 'otherProfileModal') {
+                if (!CURRENT_CHAT || CURRENT_CHAT === "999") return;
+                const u = ALL_USERS[CURRENT_CHAT];
+                document.getElementById('otherAvatar').innerText = u.name[0].toUpperCase();
+                document.getElementById('otherName').innerText = u.name;
+                document.getElementById('otherPhone').innerText = "+" + CURRENT_CHAT;
+            }
+            document.getElementById(id).style.display = 'flex';
         }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function toggleEmoji() {
             const picker = document.getElementById('emojiPicker');
@@ -230,10 +254,13 @@
             input.focus();
         }
 
-        function openProfile() { alert("Профиль в разработке"); }
-        function openSettings() { alert("Настройки в разработке"); }
-        function clearHistory() { alert("Очистка в разработке"); }
-        function showProfile() { alert("Профиль в разработке"); }
+        async function clearHistory() {
+            if (!CURRENT_CHAT || CURRENT_CHAT === "999") return alert("Нельзя очистить этот чат.");
+            if (!confirm("Удалить всю историю с этим человеком?")) return;
+            
+            await fetch('/clearHistory', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({user1: MY_PHONE, user2: CURRENT_CHAT}) });
+            document.getElementById('msgBox').innerHTML = '';
+        }
     </script>
 </body>
 </html>
