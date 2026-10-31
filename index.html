@@ -41,7 +41,8 @@
         .chat-header { padding: 20px 30px; background: var(--glass); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
         .chat-messages { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         
-        .message { padding: 12px 18px; border-radius: 18px; max-width: 65%; position: relative; font-size: 15px; border: 1px solid var(--border); animation: slideUp 0.3s; transition: 0.2s; }
+        /* АНИМАЦИЯ УБРАНА */
+        .message { padding: 12px 18px; border-radius: 18px; max-width: 65%; position: relative; font-size: 15px; border: 1px solid var(--border); transition: 0.2s; }
         .message:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0, 255, 255, 0.2); }
         .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
         .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 4px; }
@@ -89,7 +90,6 @@
         .edit-btn { background: rgba(0,255,255,0.1); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 10px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .edit-btn:hover { background: var(--accent); color: black; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
@@ -122,7 +122,6 @@
                 </div>
             </div>
             
-            <!-- ПРОФИЛЬ -->
             <div id="profile-panel">
                 <div class="profile-card">
                     <div class="profile-avatar-container">
@@ -130,7 +129,6 @@
                     </div>
                     <h2 id="myName" style="font-size: 28px; margin: 0;">Имя</h2>
                     
-                    <!-- НОВЫЕ ПОЛЯ -->
                     <div class="info-row"><span>@username:</span> <span id="myUsername">@user</span></div>
                     <div class="info-row"><span>Телефон:</span> <span id="myPhoneDisplay">+7 777 777 77 77</span></div>
                     <div class="info-row"><span>Дата рождения:</span> <span id="myBirthday">01.01.2000</span></div>
@@ -138,7 +136,6 @@
                     <div class="bio-box" id="myBio">Привет, я использую Fluxx!</div>
                     <button class="edit-btn" onclick="editProfile()">✏️ Редактировать профиль</button>
 
-                    <!-- СТАТИСТИКА -->
                     <div class="profile-stats">
                         <div class="stat-item">
                             <span class="stat-value" id="msgCount">0</span>
