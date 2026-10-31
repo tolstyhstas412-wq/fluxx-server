@@ -3,17 +3,19 @@ const fs = require('fs');
 
 let users = {};
 let messages = {};
+let groups = {};
 
 if (fs.existsSync('data.json')) {
     try {
         const data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
         users = data.users || {};
         messages = data.messages || {};
+        groups = data.groups || {};
     } catch (e) { console.log("Ошибка базы."); }
 }
 
 function saveDB() {
-    fs.writeFileSync('data.json', JSON.stringify({ users, messages }, null, 2));
+    fs.writeFileSync('data.json', JSON.stringify({ users, messages, groups }, null, 2));
 }
 
 const server = http.createServer((req, res) => {
@@ -72,6 +74,18 @@ const server = http.createServer((req, res) => {
             res.writeHead(200); res.end();
         });
     }
+    else if (req.url === '/createGroup' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            const data = JSON.parse(body);
+            const groupId = "group_" + Date.now();
+            groups[groupId] = { name: data.name, admin: data.phone, members: [data.phone] };
+            saveDB();
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify({status: 'ok', groupId}));
+        });
+    }
     else if (req.url === '/sendMessage' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
@@ -81,8 +95,7 @@ const server = http.createServer((req, res) => {
             if (!messages[chatId]) messages[chatId] = [];
             messages[chatId].push({ 
                 id: Date.now(), from: data.from, text: data.text, 
-                image: data.image, audio: data.audio,
-                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                image: data.image, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 reaction: null
             });
             saveDB();
@@ -119,4 +132,4 @@ const server = http.createServer((req, res) => {
     } else { res.writeHead(404); res.end(); }
 });
 
-server.listen(3000, () => console.log('Fluxx Ultimate запущен!'));
+server.listen(3000, () => console.log('Fluxx 4.0 запущен!'));
