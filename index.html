@@ -3,73 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <title>Fluxx 2026</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root { --bg: #050505; --glass: rgba(20, 20, 30, 0.8); --border: #00ffff; --accent: #00ffff; --text: #fff; --sub: #888; }
+        body { background: var(--bg); color: var(--text); font-family: Arial; margin: 0; display: flex; height: 100vh; }
+        #login { width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .box { background: var(--glass); padding: 40px; border-radius: 15px; border: 1px solid var(--border); box-shadow: 0 0 15px var(--accent); text-align: center; width: 300px; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; }
+        input { background: #111; color: white; border: 1px solid #333; }
+        button { background: var(--accent); color: black; font-weight: bold; cursor: pointer; }
+        #app { display: none; width: 100%; }
+        .sidebar { width: 250px; background: #111; border-right: 1px solid #333; display: flex; flex-direction: column; }
+        .tabs { display: flex; border-bottom: 1px solid #333; }
+        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #888; }
+        .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        .user { padding: 15px; border-bottom: 1px solid #333; cursor: pointer; }
+        .user:hover { background: #222; }
+        .chat { flex: 1; display: flex; flex-direction: column; }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px; border-radius: 10px; max-width: 60%; position: relative; }
+        .my { background: #0044ff; align-self: flex-end; }
+        .other { background: #222; align-self: flex-start; }
+        .input-area { padding: 15px; background: #111; display: flex; gap: 10px; }
+        .reactions { position: absolute; bottom: -15px; right: 5px; background: black; border: 1px solid var(--accent); border-radius: 15px; padding: 2px 8px; font-size: 14px; display: none; gap: 5px; cursor: pointer; }
+        .msg:hover .reactions { display: flex; }
+        .info-btn { background: none; border: 1px solid var(--accent); color: var(--accent); cursor: pointer; padding: 5px 10px; border-radius: 10px; }
+        .settings-card { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: var(--glass); padding: 30px; border-radius: 15px; border: 1px solid var(--accent); text-align: center; width: 300px; }
+    </style>
 </head>
 <body>
-    <!-- Модалка Инфо -->
-    <div id="info-modal">
-        <div class="modal-card">
-            <button class="modal-close" onclick="closeInfo()" style="position:absolute; top:10px; right:15px; background:none; border:none; color:white; font-size:24px; cursor:pointer;">×</button>
-            <div class="profile-avatar" id="info-avatar">?</div>
-            <h2 id="info-name">Имя</h2>
-            <p id="info-status" style="color:var(--accent);">Статус</p>
-            <p id="info-phone" style="color:var(--sub);">Номер</p>
-            <button class="status-btn" style="background:var(--accent); color:#000; margin-top:20px;" onclick="closeInfo()">Закрыть</button>
+    <div id="login">
+        <div class="box">
+            <h1 style="color:var(--accent);">Fluxx</h1>
+            <input type="text" id="name" placeholder="Имя">
+            <input type="text" id="phone" placeholder="Номер">
+            <input type="password" id="pass" placeholder="Пароль">
+            <button onclick="doLogin()">Войти</button>
         </div>
     </div>
 
-    <!-- Вход -->
-    <div id="login-screen">
-        <div class="login-box">
-            <h1>Fluxx</h1>
-            <p>Мессенджер будущего</p>
-            <input type="text" id="regName" placeholder="Твое имя">
-            <input type="text" id="regPhone" placeholder="Номер телефона">
-            <input type="password" id="regPassword" placeholder="Пароль">
-            <button onclick="login()">Войти в сеть</button>
+    <div id="app">
+        <div class="sidebar">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('chats')">Чаты</div>
+                <div class="tab" onclick="switchTab('profile')">Профиль</div>
+                <div class="tab" onclick="switchTab('settings')">Настройки</div>
+            </div>
+            <div id="usersList" style="flex:1; overflow-y:auto;"></div>
+        </div>
+        <div class="chat" id="chatArea">
+            <div id="chatHeader" style="padding:15px; background:#111; border-bottom:1px solid #333; display:flex; justify-content:space-between;">
+                <span id="chatTitle">Выберите чат</span>
+                <button class="info-btn" id="infoBtn" style="display:none;" onclick="showProfile()">ℹ️ Профиль</button>
+            </div>
+            <div class="messages" id="msgBox"></div>
+            <div class="input-area" id="inputArea" style="display:none;">
+                <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
+                <button onclick="sendMsg()">➤</button>
+            </div>
+        </div>
+        <div class="chat" id="profileArea" style="display:none; padding:40px; align-items:center;">
+            <h2 style="color:var(--accent);">Мой профиль</h2>
+            <p><b>Имя:</b> <span id="pName"></span></p>
+            <p><b>Номер:</b> <span id="pPhone"></span></p>
+            <button onclick="logout()" style="background:#b91c1c; color:white; margin-top:20px; width:200px;">Выйти</button>
+        </div>
+        <div class="chat" id="settingsArea" style="display:none; padding:40px; align-items:center;">
+            <h2 style="color:var(--accent);">Настройки</h2>
+            <div class="settings-card" style="width:300px;">
+                <span>Светлая тема</span>
+                <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+            </div>
+            <div class="settings-card" style="width:300px;">
+                <span>Звук</span>
+                <input type="checkbox" id="soundToggle" checked>
+            </div>
         </div>
     </div>
 
-    <!-- Приложение -->
-    <div id="app-screen">
-        <div class="nav-sidebar">
-            <div class="nav-icon active" id="nav-chats" onclick="switchTab('chats')">💬</div>
-            <div class="nav-icon" id="nav-profile" onclick="switchTab('profile')">👤</div>
-            <div class="nav-icon" id="nav-settings" onclick="switchTab('settings')">⚙️</div>
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <h2 id="mName" style="color:var(--accent);">Имя</h2>
+            <p id="mPhone"></p>
+            <button onclick="document.getElementById('infoModal').style.display='none'" style="margin-top:20px;">Закрыть</button>
         </div>
-        <div class="content-area">
-            <div id="chats-panel">
-                <div class="sidebar"><div id="users-list"></div></div>
-                <div class="chat-area">
-                    <div class="chat-header">
-                        <div class="chat-header-info">
-                            <span id="chat-with">Выберите чат</span>
-                            <button class="btn-info" id="info-btn" onclick="openInfo()">ℹ️</button>
+    </div>
+
+    <script>
+        let MY_PHONE = "", MY_NAME = "", CURRENT_CHAT = "", lastCount = 0, botMsgs = [];
+        let ALL_USERS = {};
+
+        async function doLogin() {
+            const n = document.getElementById('name').value;
+            const p = document.getElementById('phone').value;
+            const pass = document.getElementById('pass').value;
+            if (!n || !p || !pass) return alert("Заполни поля!");
+
+            const res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name:n, phone:p, password:pass}) });
+            const data = await res.json();
+            
+            if (data.status === 'ok') {
+                MY_PHONE = p; MY_NAME = n;
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+                loadUsers(); setInterval(checkMsgs, 1000);
+            } else { alert(data.message); }
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('chatArea').style.display = 'none';
+            document.getElementById('profileArea').style.display = 'none';
+            document.getElementById('settingsArea').style.display = 'none';
+            
+            if (tab === 'chats') { document.getElementById('chatArea').style.display = 'flex'; document.querySelectorAll('.tab')[0].classList.add('active'); }
+            if (tab === 'profile') { document.getElementById('profileArea').style.display = 'flex'; document.getElementById('pName').innerText = MY_NAME; document.getElementById('pPhone').innerText = MY_PHONE; document.querySelectorAll('.tab')[1].classList.add('active'); }
+            if (tab === 'settings') { document.getElementById('settingsArea').style.display = 'flex'; document.querySelectorAll('.tab')[2].classList.add('active'); }
+        }
+
+        async function loadUsers() {
+            const res = await fetch('/getUsers');
+            ALL_USERS = await res.json();
+            const list = document.getElementById('usersList');
+            list.innerHTML = `<div class="user" onclick="openChat('999', 'Бот')">🤖 Fluxx Bot</div>`;
+            
+            for (const phone in ALL_USERS) {
+                if (phone === MY_PHONE) continue;
+                list.innerHTML += `<div class="user" onclick="openChat('${phone}', '${ALL_USERS[phone].name}')">${ALL_USERS[phone].name}</div>`;
+            }
+        }
+
+        function openChat(phone, name) {
+            CURRENT_CHAT = phone;
+            document.getElementById('chatTitle').innerText = name;
+            document.getElementById('inputArea').style.display = 'flex';
+            document.getElementById('msgBox').innerHTML = '';
+            document.getElementById('infoBtn').style.display = phone === "999" ? 'none' : 'block';
+            lastCount = 0;
+            if (phone === "999" && botMsgs.length === 0) botMsgs.push({id:1, from:"999", to:MY_PHONE, text:"Привет! Я Fluxx Bot.", time:"12:00"});
+            checkMsgs();
+        }
+
+        function showProfile() {
+            if (!CURRENT_CHAT || CURRENT_CHAT === "999") return;
+            document.getElementById('mName').innerText = ALL_USERS[CURRENT_CHAT].name;
+            document.getElementById('mPhone').innerText = CURRENT_CHAT;
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        async function sendMsg() {
+            const text = document.getElementById('msgInput').value.trim();
+            if (!text || !CURRENT_CHAT) return;
+            if (CURRENT_CHAT === "999") {
+                botMsgs.push({id:Date.now(), from:MY_PHONE, to:"999", text:text, time:"12:00"});
+                document.getElementById('msgInput').value = '';
+                checkMsgs();
+                setTimeout(() => { botMsgs.push({id:Date.now(), from:"999", to:MY_PHONE, text:"Интересно!", time:"12:01"}); checkMsgs(); }, 1000);
+            } else {
+                await fetch('/sendMessage', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({from:MY_PHONE, to:CURRENT_CHAT, text:text}) });
+                document.getElementById('msgInput').value = '';
+                checkMsgs();
+            }
+        }
+
+        async function addReact(id, emoji) {
+            if (CURRENT_CHAT === "999") return;
+            await fetch('/addReaction', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id:id, reaction:emoji}) });
+            checkMsgs();
+        }
+
+        async function checkMsgs() {
+            if (!CURRENT_CHAT) return;
+            let msgs = [];
+            if (CURRENT_CHAT === "999") { msgs = botMsgs; } 
+            else {
+                const res = await fetch(`/getMessages?user1=${MY_PHONE}&user2=${CURRENT_CHAT}`);
+                msgs = await res.json();
+            }
+
+            if (msgs.length !== lastCount) {
+                lastCount = msgs.length;
+                const box = document.getElementById('msgBox');
+                box.innerHTML = '';
+                msgs.forEach(m => {
+                    box.innerHTML += `
+                        <div class="msg ${m.from === MY_PHONE ? 'my' : 'other'}">
+                            ${m.text}
+                            <div class="reactions" onclick="addReact(${m.id}, '❤️')">❤️ 🔥 😂 ${m.reaction ? m.reaction : ''}</div>
                         </div>
-                    </div>
-                    <div class="chat-messages" id="chat-messages"></div>
-                    <div class="input-area" id="input-area" style="display:none;">
-                        <input type="text" id="msgInput" placeholder="Написать сообщение..." onkeypress="handleKeyPress(event)">
-                        <button onclick="sendMessage()">➤</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Профиль и Настройки -->
-            <div id="profile-panel">
-                <div class="profile-card">
-                    <div class="profile-avatar" id="profile-avatar">?</div>
-                    <h2 id="profile-name">Имя</h2>
-                    <p id="profile-phone">Номер</p>
-                    <button class="status-btn" style="background:var(--accent); color:#000;" onclick="logout()">Выйти из аккаунта</button>
-                </div>
-            </div>
-            <div id="settings-panel">
-                <h2>Настройки</h2>
-            </div>
-        </div>
-    </div>
+                    `;
+                });
+                box.scrollTop = box.scrollHeight;
+            }
+        }
 
-    <script src="app.js"></script>
-    <script src="app2.js"></script>
+        function toggleTheme() {
+            document.body.style.background = document.getElementById('themeToggle').checked ? '#eee' : '#050505';
+            document.body.style.color = document.getElementById('themeToggle').checked ? '#000' : '#fff';
+        }
+    </script>
 </body>
 </html>
