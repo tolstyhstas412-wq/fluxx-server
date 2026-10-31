@@ -98,4 +98,4 @@ const server = http.createServer((req, res) => {
     } else { res.writeHead(404); res.end(); }
 });
 
-server.listen(3000, () => console.log('Fluxx запущен!'));
+server.listen(3000, () => console.log('Fluxx ULTIMATE запущен!'));
