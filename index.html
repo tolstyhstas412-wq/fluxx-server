@@ -1,167 +1,98 @@
-const http = require('http');
-const fs = require('fs');
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Fluxx • Ultimate</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Модалка профиля собеседника -->
+    <div id="info-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
+        <div class="modal-card" style="background:var(--glass); border:1px solid var(--glass-border); padding:40px; border-radius:30px; text-align:center; width:380px; position:relative;">
+            <button class="modal-close" onclick="closeInfo()" style="position:absolute; top:15px; right:20px; background:none; border:none; color:white; font-size:24px; cursor:pointer;">×</button>
+            <div class="modal-avatar" id="info-avatar" style="width:120px; height:120px; border-radius:40px; margin:0 auto 20px auto; font-size:50px; display:flex; justify-content:center; align-items:center; background-size:cover; background-position:center; box-shadow:0 10px 30px rgba(0,0,0,0.3); border:2px solid var(--glass-border);">?</div>
+            <h2 id="info-name" style="margin-bottom:10px;">Имя</h2>
+            <p id="info-status" style="color:var(--gold); margin-bottom:20px;">Статус</p>
+            <p id="info-phone" style="color:var(--text-sub); font-size:14px;">Номер</p>
+            <button class="status-btn" style="background:var(--accent); margin-top:20px;" onclick="closeInfo()">Закрыть</button>
+        </div>
+    </div>
 
-let users = {};
-let messages = [];
-let onlineUsers = new Set();
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>Fluxx</h1>
+            <p>Твой личный мессенджер</p>
+            <input type="text" id="regName" placeholder="Твое имя">
+            <input type="text" id="regPhone" placeholder="Номер телефона">
+            <!-- ДОБАВИЛИ ПАРОЛЬ -->
+            <input type="password" id="regPassword" placeholder="Пароль">
+            <button onclick="login()">Войти в аккаунт</button>
+        </div>
+    </div>
 
-if (fs.existsSync('data.json')) {
-    try {
-        const data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-        users = data.users || {};
-        messages = data.messages || [];
-    } catch (e) { console.log("Ошибка чтения базы."); }
-}
-
-function saveDB() {
-    fs.writeFileSync('data.json', JSON.stringify({ users, messages }, null, 2));
-}
-
-const server = http.createServer((req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-    if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
-
-    if (req.url === '/' || req.url.endsWith('.html') || req.url.endsWith('.css') || req.url.endsWith('.js')) {
-        let filePath = req.url === '/' ? 'index.html' : req.url.substring(1);
-        fs.readFile(filePath, (err, data) => {
-            if (err) { res.writeHead(404); res.end('File not found'); } 
-            else {
-                let contentType = 'text/html';
-                if (filePath.endsWith('.css')) contentType = 'text/css';
-                if (filePath.endsWith('.js')) contentType = 'application/javascript';
-                res.writeHead(200, {'Content-Type': contentType + '; charset=utf-8'});
-                res.end(data);
-            }
-        });
-    } 
-    // --- ЛОГИН С ПАРОЛЕМ ---
-    else if (req.url === '/login' && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
-            const data = JSON.parse(body);
+    <div id="app-screen">
+        <div class="nav-sidebar">
+            <div class="nav-icon active" id="nav-chats" onclick="switchTab('chats')" title="Чаты">💬</div>
+            <div class="nav-icon" id="nav-profile" onclick="switchTab('profile')" title="Профиль">👤</div>
+            <div class="nav-icon" id="nav-settings" onclick="switchTab('settings')" title="Настройки">⚙️</div>
+        </div>
+        <div class="content-area">
+            <div id="chats-panel">
+                <div class="sidebar"><div id="users-list" style="overflow-y:auto; flex:1;"></div></div>
+                <div class="chat-area">
+                    <div class="chat-header">
+                        <div class="chat-header-info">
+                            <span id="chat-with">Выберите собеседника</span>
+                            <button class="btn-info" id="info-btn" onclick="openInfo()" title="Информация">ℹ️</button>
+                        </div>
+                        <button class="btn-secret" style="display:none;" id="secret-btn" onclick="toggleSecret()">🔥 Секретный чат</button>
+                    </div>
+                    <div class="chat-messages" id="chat-messages"></div>
+                    <div class="input-area" id="input-area" style="display:none;">
+                        <button onclick="toggleEmoji()" style="background: transparent;">😀</button>
+                        <div class="emoji-picker" id="emoji-picker">
+                            <span onclick="addEmoji('😀')">😀</span><span onclick="addEmoji('😂')">😂</span><span onclick="addEmoji('❤️')">❤️</span>
+                            <span onclick="addEmoji('👍')">👍</span><span onclick="addEmoji('🔥')">🔥</span><span onclick="addEmoji('🎉')">🎉</span>
+                            <span onclick="addEmoji('😎')">😎</span><span onclick="addEmoji('😭')">😭</span><span onclick="addEmoji('🤔')">🤔</span>
+                            <span onclick="addEmoji('💀')">💀</span><span onclick="addEmoji('👻')">👻</span><span onclick="addEmoji('🤖')">🤖</span>
+                            <span onclick="addEmoji('🍻')">🍻</span><span onclick="addEmoji('🍕')">🍕</span><span onclick="addEmoji('🎮')">🎮</span>
+                            <span onclick="addEmoji('⚽')">⚽</span><span onclick="addEmoji('💩')">💩</span><span onclick="addEmoji('😈')">😈</span>
+                        </div>
+                        <input type="file" id="file-upload" accept="image/*" style="display:none;" onchange="uploadChatImage(event)">
+                        <button onclick="document.getElementById('file-upload').click()" style="background: transparent;">📎</button>
+                        <input type="text" id="msgInput" placeholder="Написать сообщение..." onkeypress="handleKeyPress(event)">
+                        <button class="btn-gift" onclick="sendGift()">🎁</button>
+                        <button onclick="sendMessage()" style="background: var(--accent); color: white;">➤</button>
+                    </div>
+                </div>
+            </div>
             
-            if (!users[data.phone]) {
-                // Регистрация: сохраняем пароль
-                users[data.phone] = { 
-                    name: data.name, 
-                    password: data.password, // <-- СОХРАНЯЕМ ПАРОЛЬ
-                    status: "user", 
-                    avatar: "blue", 
-                    theme: "dark" 
-                };
-                saveDB();
-                onlineUsers.add(data.phone);
-                res.writeHead(200, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify({status: 'ok', user: users[data.phone]}));
-            } else {
-                // Вход: проверяем пароль
-                if (users[data.phone].password === data.password) {
-                    onlineUsers.add(data.phone);
-                    res.writeHead(200, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify({status: 'ok', user: users[data.phone]}));
-                } else {
-                    res.writeHead(200, {'Content-Type': 'application/json'});
-                    res.end(JSON.stringify({status: 'error', message: 'Неверный пароль!'}));
-                }
-            }
-        });
-    }
-    // -----------------------
-    else if (req.url === '/logout' && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
-            const data = JSON.parse(body);
-            onlineUsers.delete(data.phone);
-            res.writeHead(200); res.end();
-        });
-    }
-    else if (req.url === '/getOnline') {
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(Array.from(onlineUsers)));
-    }
-    else if (req.url === '/updateProfile' && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
-            const data = JSON.parse(body);
-            if (users[data.phone]) {
-                if(data.status) users[data.phone].status = data.status;
-                if(data.avatar) users[data.phone].avatar = data.avatar;
-                if(data.theme) users[data.phone].theme = data.theme;
-                saveDB();
-            }
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify({status: 'ok'}));
-        });
-    }
-    else if (req.url === '/clearHistory' && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
-            const data = JSON.parse(body);
-            messages = messages.filter(m => !(m.from === data.user1 && m.to === data.user2) && !(m.from === data.user2 && m.to === data.user1));
-            saveDB();
-            res.writeHead(200); res.end();
-        });
-    }
-    else if (req.url === '/getUsers') {
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(users));
-    }
-    else if (req.url === '/sendMessage' && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
-            const data = JSON.parse(body);
-            const now = new Date();
-            const newMsg = {
-                id: Date.now(), from: data.from, to: data.to, text: data.text,
-                time: now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                date: now.toLocaleDateString(), isGift: data.isGift || false,
-                isImage: data.isImage || false, secret: data.secret || false,
-                reaction: null
-            };
-            messages.push(newMsg);
-            saveDB();
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify({status: 'ok', id: newMsg.id}));
-        });
-    }
-    else if (req.url === '/addReaction' && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
-            const data = JSON.parse(body);
-            const msg = messages.find(m => m.id === data.id);
-            if (msg) { msg.reaction = data.reaction; saveDB(); }
-            res.writeHead(200); res.end();
-        });
-    }
-    else if (req.url.startsWith('/deleteMessage') && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', () => {
-            const data = JSON.parse(body);
-            messages = messages.filter(m => m.id !== data.id);
-            saveDB();
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify({status: 'ok'}));
-        });
-    }
-    else if (req.url.startsWith('/getMessages')) {
-        const urlParams = new URL(req.url, `http://${req.headers.host}`).searchParams;
-        const u1 = urlParams.get('user1'); const u2 = urlParams.get('user2');
-        const dialog = messages.filter(m => (m.from === u1 && m.to === u2) || (m.from === u2 && m.to === u1));
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(dialog));
-    } else {
-        res.writeHead(404); res.end('Not found');
-    }
-});
+            <div id="profile-panel">
+                <div class="profile-card">
+                    <div class="profile-avatar" id="profile-avatar">?</div>
+                    <h2 id="profile-name">Имя</h2>
+                    <p id="profile-status">Обычный</p>
+                    <p id="profile-phone">Номер</p>
+                    <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
+                    <button class="status-btn" style="background:rgba(255,255,255,0.1);" onclick="document.getElementById('avatar-upload').click()">📷 Сменить аватарку</button>
+                    <p style="margin-top:30px;">СТАТУС:</p>
+                    <button class="status-btn" style="background:rgba(255,255,255,0.05);" onclick="setStatus('user')">👤 Обычный</button>
+                    <button class="status-btn" style="background:linear-gradient(135deg, #b45309, #f59e0b);" onclick="setStatus('premium')">⭐ PREMIUM</button>
+                    <button class="status-btn" style="background:linear-gradient(135deg, #6b21a8, #a855f7);" onclick="setStatus('vip')">👑 VIP</button>
+                    <button class="status-btn logout-btn" onclick="logout()">🚪 Выйти</button>
+                </div>
+            </div>
 
-server.listen(3000, () => console.log('Fluxx ULTIMATE запущен! http://localhost:3000'));
+            <div id="settings-panel">
+                <h2>Настройки</h2>
+                <div class="settings-card"><span>Светлая тема</span><label class="switch"><input type="checkbox" id="theme-checkbox" onchange="toggleTheme()"><span class="slider"></span></label></div>
+                <div class="settings-card"><span>Звук</span><label class="switch"><input type="checkbox" id="sound-checkbox" checked onchange="toggleSound()"><span class="slider"></span></label></div>
+                <div class="settings-card" style="cursor:pointer; color:#ef4444;" onclick="clearHistory()"><span>Очистить историю чата</span><span>🗑️</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="app2.js"></script>
+</body>
+</html>
