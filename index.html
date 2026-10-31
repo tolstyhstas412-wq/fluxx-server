@@ -2,118 +2,77 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Fluxx • Glass</title>
+    <title>Fluxx • 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* --- БАЗА --- */
-        * { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
-        body { margin: 0; display: flex; height: 100vh; overflow: hidden; background: #0f172a; }
+        :root { --bg: #050505; --glass: rgba(20, 20, 35, 0.6); --border: rgba(0, 255, 255, 0.3); --accent: #00ffff; --text: #fff; --sub: #8b9bb4; --my-msg: linear-gradient(135deg, #6200ea, #00ffff); --other-msg: rgba(30, 30, 50, 0.9); --glow: 0 0 20px rgba(0, 255, 255, 0.5); }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #030008 80%); }
 
-        /* --- ФОН (АНИМИРОВАННЫЙ ГРАДИЕНТ) --- */
-        .bg-gradient {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: linear-gradient(45deg, #1e1b4b, #0f172a, #312e81, #4c1d95);
-            background-size: 400% 400%;
-            animation: gradientMove 15s ease infinite;
-        }
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        /* Стеклянный вход */
+        #login { width: 100%; display: flex; justify-content: center; align-items: center; }
+        .box { background: var(--glass); border: 1px solid var(--border); backdrop-filter: blur(25px); padding: 50px; border-radius: 30px; text-align: center; width: 380px; box-shadow: var(--glow); animation: fadeIn 0.8s; }
+        .box h1 { font-size: 42px; font-weight: 800; color: var(--accent); text-shadow: var(--glow); margin-bottom: 10px; }
+        .box input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: var(--text); outline: none; transition: 0.3s; }
+        .box input:focus { border-color: var(--accent); box-shadow: var(--glow); }
+        .box button { width: 100%; padding: 15px; background: var(--accent); border: none; color: #000; border-radius: 10px; cursor: pointer; font-weight: 800; margin-top: 20px; transition: 0.3s; }
+        .box button:hover { transform: translateY(-3px); box-shadow: var(--glow); }
 
-        /* --- ЛЕТАЮЩИЕ ЧАСТИЦЫ --- */
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
-        .particle {
-            position: absolute; background: rgba(255, 255, 255, 0.4); border-radius: 50%;
-            animation: floatUp linear infinite;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-        }
-
-        /* --- ЭКРАН ВХОДА (СТЕКЛО) --- */
-        #login { width: 100%; display: flex; justify-content: center; align-items: center; position: relative; z-index: 10; }
-        .login-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(25px); /* Эффект размытия */
-            padding: 50px 40px; border-radius: 30px; text-align: center; width: 380px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-        .login-box h1 {
-            font-size: 48px; font-weight: 800; margin-bottom: 5px;
-            background: linear-gradient(to right, #60a5fa, #c084fc);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .login-box p { color: #94a3b8; margin-bottom: 30px; font-size: 14px; }
-        
-        /* Поля ввода */
-        .login-box input {
-            width: 100%; padding: 16px; margin: 10px 0;
-            border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.3); color: white; outline: none;
-            transition: 0.3s; font-size: 15px;
-        }
-        .login-box input:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2); }
-        
-        /* Кнопка */
-        .login-box button {
-            width: 100%; padding: 16px; margin-top: 20px;
-            background: linear-gradient(to right, #3b82f6, #8b5cf6);
-            border: none; color: white; border-radius: 15px; cursor: pointer;
-            font-weight: 700; font-size: 16px; transition: 0.3s;
-        }
-        .login-box button:hover {
-            transform: translateY(-2px); box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
-        }
-
-        /* --- ОСТАЛЬНОЙ ИНТЕРФЕЙС (ЧАТЫ, ПРОФИЛЬ) --- */
-        #app { display: none; width: 100%; background: #0f172a; color: white; }
-        .nav-sidebar { width: 80px; background: #1e293b; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 20px; border-right: 1px solid #334155; }
-        .nav-icon { font-size: 24px; cursor: pointer; padding: 15px; border-radius: 15px; color: #94a3b8; }
-        .nav-icon:hover, .nav-icon.active { background: #334155; color: #60a5fa; }
+        /* Интерфейс */
+        #app { display: none; width: 100%; }
+        .nav-sidebar { width: 85px; background: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 30px; gap: 20px; }
+        .nav-icon { font-size: 26px; cursor: pointer; color: var(--sub); transition: 0.3s; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; border-radius: 15px; }
+        .nav-icon:hover, .nav-icon.active { background: rgba(0, 255, 255, 0.1); color: var(--accent); box-shadow: inset 0 0 10px rgba(0,255,255,0.2); }
         .content-area { display: flex; flex: 1; }
-        .sidebar { width: 300px; background: #1e293b; border-right: 1px solid #334155; overflow-y: auto; }
-        .user-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #334155; }
-        .user-item:hover { background: #334155; }
-        .avatar { width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; background-size: cover; background-position: center; }
-        .chat-area { flex: 1; display: flex; flex-direction: column; }
-        .chat-header { padding: 20px; background: #1e293b; border-bottom: 1px solid #334155; font-weight: 700; }
-        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .message { padding: 12px 18px; border-radius: 18px; max-width: 65%; font-size: 15px; }
-        .my-msg { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .other-msg { background: #334155; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .msg-time { font-size: 10px; opacity: 0.6; float: right; margin-left: 10px; margin-top: 5px; }
-        .input-area { padding: 20px; background: #1e293b; border-top: 1px solid #334155; display: flex; gap: 15px; }
-        .input-area input { flex: 1; padding: 15px; border-radius: 15px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
-        .input-area button { padding: 15px 25px; border-radius: 15px; background: #60a5fa; color: #0f172a; border: none; cursor: pointer; font-weight: bold; }
         
-        #profile-panel { display: none; flex: 1; flex-direction: column; padding: 40px; align-items: center; background: #0f172a; }
-        .profile-card { background: #1e293b; border: 1px solid #334155; padding: 40px; border-radius: 20px; text-align: center; width: 400px; }
-        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 20px auto; font-size: 40px; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #3b82f6, #8b5cf6); background-size: cover; background-position: center; }
+        .sidebar { width: 320px; background: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+        .user-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .user-item:hover { background: rgba(0, 255, 255, 0.05); border-left: 3px solid var(--accent); }
+        .avatar { width: 50px; height: 50px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-weight: 800; background: linear-gradient(135deg, #6200ea, #00ffff); border: 2px solid var(--border); background-size: cover; background-position: center; transition: 0.3s; }
+        .avatar:hover { transform: scale(1.1); box-shadow: var(--glow); }
+
+        .chat-area { flex: 1; display: flex; flex-direction: column; }
+        .chat-header { padding: 20px 30px; background: var(--glass); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .chat-messages { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* Анимация сообщений */
+        .message { padding: 12px 18px; border-radius: 18px; max-width: 65%; position: relative; font-size: 15px; border: 1px solid var(--border); animation: slideUp 0.3s; transition: 0.2s; }
+        .message:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0, 255, 255, 0.2); }
+        .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg-time { font-size: 10px; opacity: 0.7; float: right; margin-left: 10px; margin-top: 5px; }
+
+        /* Реакции */
+        .reactions { position: absolute; bottom: -15px; right: 10px; background: #000; border: 1px solid var(--accent); border-radius: 20px; padding: 2px 8px; font-size: 16px; display: none; gap: 5px; box-shadow: var(--glow); z-index: 10; }
+        .message:hover .reactions { display: flex; }
+        .reactions span { cursor: pointer; transition: 0.2s; }
+        .reactions span:hover { transform: scale(1.3); }
+
+        .input-area { padding: 20px 30px; background: var(--glass); border-top: 1px solid var(--border); display: flex; gap: 15px; }
+        .input-area input { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; outline: none; transition: 0.3s; }
+        .input-area input:focus { border-color: var(--accent); box-shadow: var(--glow); }
+        .input-area button { padding: 15px; border-radius: 50%; background: var(--accent); color: #000; border: none; cursor: pointer; width: 50px; height: 50px; transition: 0.2s; }
+        .input-area button:hover { box-shadow: var(--glow); transform: scale(1.1); }
+
+        #profile-panel { display: none; flex: 1; flex-direction: column; padding: 40px; align-items: center; }
+        .profile-card { background: var(--glass); border: 1px solid var(--border); padding: 40px; border-radius: 20px; text-align: center; width: 400px; }
+        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 20px auto; font-size: 40px; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #6200ea, #00ffff); border: 3px solid var(--accent); box-shadow: var(--glow); background-size: cover; background-position: center; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
-    <!-- Фон и частицы -->
-    <div class="bg-gradient"></div>
-    <div class="particles" id="particles"></div>
-
-    <!-- ЭКРАН ВХОДА -->
     <div id="login">
-        <div class="login-box">
+        <div class="box">
             <h1>Fluxx</h1>
-            <p>Мессенджер будущего</p>
-            <input type="text" id="name" placeholder="Твое имя">
-            <input type="text" id="phone" placeholder="Номер телефона">
+            <input type="text" id="name" placeholder="Имя">
+            <input type="text" id="phone" placeholder="Номер">
             <input type="password" id="pass" placeholder="Пароль">
-            <button onclick="doLogin()">Войти в систему</button>
+            <button onclick="doLogin()">Войти в сеть</button>
         </div>
     </div>
 
-    <!-- ПРИЛОЖЕНИЕ -->
     <div id="app">
         <div class="nav-sidebar">
             <div class="nav-icon active" onclick="switchTab('chats')">💬</div>
@@ -126,8 +85,8 @@
                     <div class="chat-header"><span id="chatTitle">Выберите чат</span></div>
                     <div class="chat-messages" id="msgBox"></div>
                     <div class="input-area" id="inputArea" style="display:none;">
-                        <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
-                        <button onclick="sendMsg()">Отправить</button>
+                        <input type="text" id="msgInput" placeholder="Написать сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
+                        <button onclick="sendMsg()">➤</button>
                     </div>
                 </div>
             </div>
@@ -135,30 +94,19 @@
                 <div class="profile-card">
                     <div class="profile-avatar" id="myAvatar">?</div>
                     <h2 id="myName">Имя</h2>
-                    <p id="myPhone" style="color:#94a3b8;">Номер</p>
+                    <p id="myPhone" style="color:var(--sub);">Номер</p>
                     <input type="file" id="avatarUpload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
-                    <button onclick="document.getElementById('avatarUpload').click()" style="background:#334155; color:white; border:none; padding:10px 20px; border-radius:10px; margin-top:10px; cursor:pointer;">📷 Сменить аватарку</button>
+                    <button onclick="document.getElementById('avatarUpload').click()" style="background:var(--glass); color:white; border:1px solid var(--border); padding:10px 20px; border-radius:10px; margin-top:10px; cursor:pointer;">📷 Сменить аватарку</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- ГЕНЕРАЦИЯ ЧАСТИЦ ---
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 30; i++) {
-            const p = document.createElement('div');
-            p.className = 'particle';
-            const size = Math.random() * 6 + 2;
-            p.style.width = size + 'px';
-            p.style.height = size + 'px';
-            p.style.left = Math.random() * 100 + '%';
-            p.style.animationDuration = (Math.random() * 10 + 5) + 's';
-            p.style.animationDelay = Math.random() * 5 + 's';
-            particlesContainer.appendChild(p);
-        }
-
         let MY_PHONE = "", CURRENT_CHAT = "", botMsgs = [], ALL_USERS = {};
+
+        // --- ЛОКАЛЬНОЕ ВРЕМЯ ---
+        function getTime() { return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
         async function doLogin() {
             const n = document.getElementById('name').value;
@@ -197,7 +145,7 @@
             document.getElementById('chatTitle').innerText = name;
             document.getElementById('inputArea').style.display = 'flex';
             document.getElementById('msgBox').innerHTML = '';
-            if (phone === "999" && botMsgs.length === 0) botMsgs.push({id:1, from:"999", to:MY_PHONE, text:"Привет! Я Fluxx Bot. Чем могу помочь?", time:"12:00"});
+            if (phone === "999" && botMsgs.length === 0) botMsgs.push({id:1, from:"999", to:MY_PHONE, text:"Привет! Я Fluxx Bot.", time:getTime()});
             renderMsgs(); 
         }
 
@@ -205,15 +153,21 @@
             const text = document.getElementById('msgInput').value.trim();
             if (!text || !CURRENT_CHAT) return;
             if (CURRENT_CHAT === "999") {
-                botMsgs.push({id:Date.now(), from:MY_PHONE, to:"999", text:text, time:"12:00"});
+                botMsgs.push({id:Date.now(), from:MY_PHONE, to:"999", text:text, time:getTime()});
                 document.getElementById('msgInput').value = '';
                 renderMsgs();
-                setTimeout(() => { botMsgs.push({id:Date.now(), from:"999", to:MY_PHONE, text:"Интересно!", time:"12:01"}); renderMsgs(); }, 1000);
+                setTimeout(() => { botMsgs.push({id:Date.now(), from:"999", to:MY_PHONE, text:"Интересно!", time:getTime()}); renderMsgs(); }, 1000);
             } else {
                 await fetch('/sendMessage', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({from:MY_PHONE, to:CURRENT_CHAT, text:text}) });
                 document.getElementById('msgInput').value = '';
                 checkMsgs();
             }
+        }
+
+        async function addReact(id, emoji) {
+            if (CURRENT_CHAT === "999") return;
+            await fetch('/addReaction', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id:String(id), reaction:emoji}) });
+            checkMsgs(); 
         }
 
         async function checkMsgs() {
@@ -231,9 +185,16 @@
             const box = document.getElementById('msgBox');
             box.innerHTML = '';
             messages.forEach(m => {
+                let timeStr = m.time || getTime(); // Фолбэк на локальное время
                 box.innerHTML += `
                     <div class="message ${m.from === MY_PHONE ? 'my-msg' : 'other-msg'}">
-                        ${m.text} <span class="msg-time">${m.time}</span>
+                        ${m.text} <span class="msg-time">${timeStr}</span>
+                        <div class="reactions ${m.reaction ? 'active-reaction' : ''}">
+                            <span onclick="addReact('${m.id}', '❤️')">❤️</span>
+                            <span onclick="addReact('${m.id}', '🔥')">🔥</span>
+                            <span onclick="addReact('${m.id}', '😂')">😂</span>
+                            ${m.reaction ? `<span style="margin-left:5px; border-left:1px solid #555; padding-left:5px;">${m.reaction}</span>` : ''}
+                        </div>
                     </div>
                 `;
             });
