@@ -2,172 +2,88 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Fluxx • 2026</title>
+    <title>Fluxx</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #050505; --glass: rgba(20, 20, 35, 0.6); --border: rgba(0, 255, 255, 0.3); --accent: #00ffff; --text: #fff; --sub: #8b9bb4; --my-msg: linear-gradient(135deg, #6200ea, #00ffff); --other-msg: rgba(30, 30, 50, 0.9); --glow: 0 0 20px rgba(0, 255, 255, 0.5); --premium: #ffaa00; --vip: #ff00ff; }
-        body.light { --bg: #f0f2f5; --glass: rgba(255, 255, 255, 0.8); --border: rgba(0, 0, 0, 0.1); --text: #000; --sub: #666; --other-msg: rgba(255, 255, 255, 0.9); }
+        :root { --bg: #17212b; --panel: #0e1621; --border: #242f3d; --accent: #00ffff; --text: #fff; --sub: #8b9bb4; --my-msg: #2b5278; --other-msg: #182533; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #030008 80%); transition: 0.3s; }
-        body.light { background-image: none; }
+        body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+
+        /* ВХОД */
         #login { width: 100%; display: flex; justify-content: center; align-items: center; }
-        .box { background: var(--glass); border: 1px solid var(--border); backdrop-filter: blur(25px); padding: 50px; border-radius: 30px; text-align: center; width: 380px; box-shadow: var(--glow); animation: fadeIn 0.8s; }
-        .box h1 { font-size: 42px; font-weight: 800; color: var(--accent); text-shadow: var(--glow); margin-bottom: 10px; }
-        .box input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: var(--text); outline: none; transition: 0.3s; }
-        .box input:focus { border-color: var(--accent); box-shadow: var(--glow); }
-        .box button { width: 100%; padding: 15px; background: var(--accent); border: none; color: #000; border-radius: 10px; cursor: pointer; font-weight: 800; margin-top: 20px; transition: 0.3s; }
-        .box button:hover { transform: translateY(-3px); box-shadow: var(--glow); }
+        .login-box { background: var(--panel); padding: 40px; border-radius: 15px; text-align: center; width: 350px; border: 1px solid var(--border); }
+        .login-box h1 { color: var(--accent); margin-bottom: 20px; }
+        .login-box input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: white; }
+        .login-box button { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* ИНТЕРФЕЙС */
         #app { display: none; width: 100%; }
-        .nav-sidebar { width: 85px; background: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 30px; gap: 20px; }
-        .nav-icon { font-size: 26px; cursor: pointer; color: var(--sub); transition: 0.3s; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; border-radius: 15px; }
-        .nav-icon:hover, .nav-icon.active { background: rgba(0, 255, 255, 0.1); color: var(--accent); box-shadow: inset 0 0 10px rgba(0,255,255,0.2); }
-        .content-area { display: flex; flex: 1; }
-        .sidebar { width: 320px; background: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
-        .user-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
-        .user-item:hover { background: rgba(0, 255, 255, 0.05); border-left: 3px solid var(--accent); }
-        .avatar { width: 50px; height: 50px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-weight: 800; background: linear-gradient(135deg, #6200ea, #00ffff); border: 2px solid var(--border); background-size: cover; background-position: center; transition: 0.3s; }
-        .avatar:hover { transform: scale(1.1); box-shadow: var(--glow); }
-        .chat-area { flex: 1; display: flex; flex-direction: column; }
-        .chat-header { padding: 20px 30px; background: var(--glass); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-        .chat-messages { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .message { padding: 12px 18px; border-radius: 18px; max-width: 65%; position: relative; font-size: 15px; border: 1px solid var(--border); transition: 0.2s; }
-        .message:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0, 255, 255, 0.2); }
-        .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 4px; }
-        .msg-time { font-size: 10px; opacity: 0.7; float: right; margin-left: 10px; margin-top: 5px; }
-        .reactions { position: absolute; bottom: -15px; right: 10px; background: #000; border: 1px solid var(--accent); border-radius: 20px; padding: 2px 8px; font-size: 16px; display: none; gap: 5px; box-shadow: var(--glow); z-index: 10; }
-        .message:hover .reactions { display: flex; }
-        .reactions span { cursor: pointer; transition: 0.2s; }
-        .reactions span:hover { transform: scale(1.3); }
-        .input-area { padding: 20px 30px; background: var(--glass); border-top: 1px solid var(--border); display: flex; gap: 15px; }
-        .input-area input { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; outline: none; transition: 0.3s; }
-        .input-area input:focus { border-color: var(--accent); box-shadow: var(--glow); }
-        .input-area button { padding: 15px; border-radius: 50%; background: var(--accent); color: #000; border: none; cursor: pointer; width: 50px; height: 50px; transition: 0.2s; }
-        .input-area button:hover { box-shadow: var(--glow); transform: scale(1.1); }
-        #profile-panel, #other-profile-panel { display: none; flex: 1; flex-direction: column; padding: 40px; align-items: center; overflow-y: auto; }
-        .profile-card { background: var(--glass); border: 1px solid var(--border); padding: 40px; border-radius: 25px; text-align: center; width: 480px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; }
-        .profile-avatar-container { position: relative; width: 130px; height: 130px; margin: 0 auto 25px auto; }
-        .profile-avatar { width: 100%; height: 100%; border-radius: 50%; font-size: 50px; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #6200ea, #00ffff); border: 3px solid var(--border); background-size: cover; background-position: center; z-index: 2; position: relative; transition: 0.3s; }
-        .profile-avatar.premium { border-color: var(--premium); box-shadow: 0 0 30px var(--premium); }
-        .profile-avatar.vip { border-color: var(--vip); box-shadow: 0 0 30px var(--vip); }
-        .info-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0; font-size: 16px; }
-        .info-row span:first-child { color: var(--sub); font-size: 14px; }
-        .info-row span:last-child { font-weight: bold; }
-        .bio-box { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 15px; padding: 15px; margin: 20px 0; font-style: italic; color: var(--sub); }
-        .profile-stats { display: flex; justify-content: space-around; margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 15px; border: 1px solid var(--border); }
-        .stat-item { display: flex; flex-direction: column; align-items: center; }
-        .stat-value { font-size: 24px; font-weight: 800; color: var(--accent); }
-        .stat-label { font-size: 12px; color: var(--sub); }
-        .status-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        .status-btn { padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: white; cursor: pointer; transition: 0.2s; font-weight: bold; }
-        .status-btn:hover { background: rgba(255,255,255,0.1); }
-        .status-btn.active { box-shadow: 0 0 15px var(--accent); border-color: var(--accent); }
-        .logout-btn { background: #b91c1c; color: white; border: none; padding: 12px 25px; border-radius: 12px; margin-top: 30px; cursor: pointer; font-weight: bold; transition: 0.2s; width: 100%; }
-        .logout-btn:hover { background: #dc2626; box-shadow: 0 0 15px rgba(220, 38, 38, 0.5); }
-        .edit-btn { background: rgba(0,255,255,0.1); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 10px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        .edit-btn:hover { background: var(--accent); color: black; }
-        #settings-panel { display: none; flex: 1; flex-direction: column; padding: 40px; align-items: center; overflow-y: auto; }
-        .settings-card { background: var(--glass); border: 1px solid var(--border); padding: 20px 30px; border-radius: 15px; width: 500px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .settings-label { font-weight: 600; }
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 26px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(24px); }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .sidebar-menu { width: 320px; background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+        .menu-header { padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .menu-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 20px; }
+        .menu-items { padding: 10px 0; }
+        .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: var(--text); }
+        .menu-item:hover { background: var(--panel); }
+        .menu-item .icon { font-size: 20px; width: 24px; text-align: center; color: var(--sub); }
+
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--panel); }
+        .chat-header { padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); font-weight: 700; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 12px; max-width: 70%; font-size: 15px; }
+        .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; }
+        .other-msg { background: var(--other-msg); align-self: flex-start; }
+        .input-area { padding: 15px; background: var(--bg); border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .input-area input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); color: white; outline: none; }
+        .input-area button { padding: 12px; border-radius: 10px; background: var(--accent); color: #000; border: none; cursor: pointer; font-weight: bold; }
+
+        .user-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
+        .user-item:hover { background: var(--panel); }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #6200ea, #00ffff); display: flex; justify-content: center; align-items: center; font-weight: bold; background-size: cover; background-position: center; }
     </style>
 </head>
 <body>
+    <!-- ЭКРАН ВХОДА -->
     <div id="login">
-        <div class="box">
+        <div class="login-box">
             <h1>Fluxx</h1>
             <input type="text" id="name" placeholder="Имя">
-            <input type="text" id="phone" placeholder="Номер (+7...)">
+            <input type="text" id="phone" placeholder="Номер">
             <input type="password" id="pass" placeholder="Пароль">
             <button onclick="doLogin()">Войти в сеть</button>
         </div>
     </div>
 
+    <!-- ПРИЛОЖЕНИЕ -->
     <div id="app">
-        <div class="nav-sidebar">
-            <div class="nav-icon active" onclick="switchTab('chats')">💬</div>
-            <div class="nav-icon" onclick="switchTab('profile')">👤</div>
-            <div class="nav-icon" onclick="switchTab('settings')">⚙️</div>
+        <div class="sidebar-menu">
+            <div class="menu-header" onclick="alert('Профиль в разработке')">
+                <div class="menu-avatar" id="myAvatar">?</div>
+                <div>
+                    <h3 id="myName" style="margin:0;">Имя</h3>
+                    <p id="myPhone" style="margin:5px 0 0; font-size:12px; color:var(--sub);">Номер</p>
+                </div>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="alert('Создать группу')"><span class="icon">👥</span> Создать группу</div>
+                <div class="menu-item" onclick="alert('Контакты')"><span class="icon">👤</span> Контакты</div>
+                <div class="menu-item" onclick="alert('Настройки')"><span class="icon">⚙️</span> Настройки</div>
+            </div>
+            <div style="padding: 10px 20px; color: var(--sub); font-size: 12px; font-weight: bold; margin-top: 10px;">ЧАТЫ</div>
+            <div id="usersList"></div>
         </div>
-        <div class="content-area">
-            <div id="chats-panel" style="display:flex; width:100%;">
-                <div class="sidebar"><div id="usersList"></div></div>
-                <div class="chat-area">
-                    <div class="chat-header">
-                        <span id="chatTitle">Выберите чат</span>
-                        <button id="infoBtn" style="display:none; background:none; border:1px solid var(--accent); color:var(--accent); cursor:pointer; padding:5px 10px; border-radius:10px;" onclick="showOtherProfile()">ℹ️ Профиль</button>
-                    </div>
-                    <div class="chat-messages" id="msgBox"></div>
-                    <div class="input-area" id="inputArea" style="display:none;">
-                        <input type="text" id="msgInput" placeholder="Написать сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
-                        <button onclick="sendMsg()">➤</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="profile-panel">
-                <div class="profile-card">
-                    <div class="profile-avatar-container"><div class="profile-avatar" id="myAvatar">?</div></div>
-                    <h2 id="myName" style="font-size: 28px; margin: 0;">Имя</h2>
-                    <div class="info-row"><span>@username:</span> <span id="myUsername">@user</span></div>
-                    <div class="info-row"><span>Телефон:</span> <span id="myPhoneDisplay">+7 777 777 77 77</span></div>
-                    <div class="info-row"><span>Дата рождения:</span> <span id="myBirthday">01.01.2000</span></div>
-                    <div class="bio-box" id="myBio">Привет, я использую Fluxx!</div>
-                    <button class="edit-btn" onclick="editProfile()">✏️ Редактировать профиль</button>
-                    <div class="profile-stats">
-                        <div class="stat-item"><span class="stat-value" id="msgCount">0</span><span class="stat-label">Сообщений</span></div>
-                        <div class="stat-item"><span class="stat-value" id="contactCount">0</span><span class="stat-label">Контактов</span></div>
-                    </div>
-                    <input type="file" id="avatarUpload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
-                    <button onclick="document.getElementById('avatarUpload').click()" style="background:rgba(255,255,255,0.05); color:white; border:1px solid var(--border); padding:10px 20px; border-radius:10px; cursor:pointer;">📷 Сменить аватарку</button>
-                    <p style="margin-top:25px; font-weight: bold; color: var(--sub);">СТАТУС АККАУНТА:</p>
-                    <div class="status-buttons">
-                        <button class="status-btn" onclick="setStatus('user')">Обычный</button>
-                        <button class="status-btn" onclick="setStatus('premium')" style="color:var(--premium);">⭐ Premium</button>
-                        <button class="status-btn" onclick="setStatus('vip')" style="color:var(--vip);">👑 VIP</button>
-                    </div>
-                    <button class="logout-btn" onclick="logout()">Выйти из аккаунта</button>
-                </div>
-            </div>
 
-            <div id="other-profile-panel">
-                <div class="profile-card">
-                    <button onclick="switchTab('chats')" style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:20px; cursor:pointer;">✖</button>
-                    <div class="profile-avatar-container"><div class="profile-avatar" id="otherAvatar">?</div></div>
-                    <h2 id="otherName" style="font-size: 28px; margin: 0;">Имя</h2>
-                    <div class="info-row"><span>@username:</span> <span id="otherUsername">@user</span></div>
-                    <div class="info-row"><span>Телефон:</span> <span id="otherPhone">+7 777 777 77 77</span></div>
-                    <div class="info-row"><span>Дата рождения:</span> <span id="otherBirthday">01.01.2000</span></div>
-                    <div class="bio-box" id="otherBio">Привет, я использую Fluxx!</div>
-                    <p style="margin-top:25px; font-weight: bold; color: var(--sub);">СТАТУС:</p>
-                    <h3 id="otherStatus" style="color:var(--accent);">Обычный</h3>
-                </div>
+        <div class="chat-area" id="chatPanel">
+            <div class="chat-header"><span id="chatTitle">Выберите чат</span></div>
+            <div class="chat-messages" id="msgBox"></div>
+            <div class="input-area" id="inputArea" style="display:none;">
+                <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
+                <button onclick="sendMsg()">➤</button>
             </div>
-
-            <div id="settings-panel">
-                <h2 style="color: var(--accent); margin-bottom: 30px;">Настройки</h2>
-                <div class="settings-card"><span class="settings-label">Светлая тема</span><label class="switch"><input type="checkbox" id="themeToggle" onchange="toggleTheme()"><span class="slider"></span></label></div>
-                <div class="settings-card"><span class="settings-label">Звуки в чате</span><label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label></div>
-                <div class="settings-card"><span class="settings-label">Автоочистка истории (24 часа)</span><label class="switch"><input type="checkbox" id="autoCleanToggle"><span class="slider"></span></label></div>
-                <div class="settings-card" style="cursor:pointer;" onclick="changePassword()"><span class="settings-label" style="color: #fbbf24;">🔐 Сменить пароль</span><span>→</span></div>
-                <div class="settings-card" style="cursor:pointer;" onclick="clearHistory()"><span class="settings-label" style="color: #ef4444;">🗑️ Очистить всю историю</span><span>→</span></div>
-                <div class="settings-card" style="cursor:pointer;" onclick="logout()"><span class="settings-label" style="color: #ef4444;">🚪 Выйти из аккаунта</span><span>→</span></div>
-            </div>
-
         </div>
     </div>
 
     <script>
         let MY_PHONE = "", MY_NAME = "", CURRENT_CHAT = "", botMsgs = [], ALL_USERS = {};
-        let MY_STATUS = "user", MY_USERNAME = "", MY_BIO = "", MY_BIRTHDAY = "";
-
-        function getTime() { return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
         async function doLogin() {
             const n = document.getElementById('name').value;
@@ -175,53 +91,39 @@
             const pass = document.getElementById('pass').value;
             if (!n || !p || !pass) return alert("Заполни поля!");
 
-            const res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name:n, phone:p, password:pass}) });
-            const data = await res.json();
-            
-            if (data.status === 'ok') {
-                MY_PHONE = p; MY_NAME = n;
-                MY_USERNAME = data.user.username || "@" + n.toLowerCase();
-                MY_BIO = data.user.bio || "Привет, я использую Fluxx!";
-                MY_BIRTHDAY = data.user.birthday || "01.01.2000";
-                MY_STATUS = data.user.status || "user";
+            try {
+                const res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name:n, phone:p, password:pass}) });
+                const data = await res.json();
                 
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                loadUsers(); 
-                setInterval(() => { if (CURRENT_CHAT && CURRENT_CHAT !== "999") checkMsgs(); }, 1000);
-                updateProfileUI();
-            } else { alert(data.message); }
-        }
-
-        function updateProfileUI() {
-            document.getElementById('myName').innerText = MY_NAME;
-            document.getElementById('myUsername').innerText = MY_USERNAME;
-            document.getElementById('myPhoneDisplay').innerText = "+" + MY_PHONE;
-            document.getElementById('myBio').innerText = MY_BIO;
-            document.getElementById('myBirthday').innerText = MY_BIRTHDAY;
-            
-            const av = document.getElementById('myAvatar');
-            if (ALL_USERS[MY_PHONE] && ALL_USERS[MY_PHONE].avatar) {
-                av.style.backgroundImage = `url(${ALL_USERS[MY_PHONE].avatar})`; av.innerText = "";
-            } else {
-                av.style.backgroundImage = 'none'; av.innerText = MY_NAME[0].toUpperCase();
+                if (data.status === 'ok') {
+                    MY_PHONE = p; MY_NAME = n;
+                    document.getElementById('login').style.display = 'none';
+                    document.getElementById('app').style.display = 'flex';
+                    document.getElementById('myName').innerText = n;
+                    document.getElementById('myPhone').innerText = p;
+                    document.getElementById('myAvatar').innerText = n[0].toUpperCase();
+                    loadUsers(); 
+                    setInterval(() => { if (CURRENT_CHAT && CURRENT_CHAT !== "999") checkMsgs(); }, 1000);
+                } else {
+                    alert(data.message);
+                }
+            } catch(e) {
+                alert("Сервер не отвечает. Подожди минуту и попробуй снова.");
             }
-            av.className = 'profile-avatar ' + MY_STATUS;
         }
 
         async function loadUsers() {
             const res = await fetch('/getUsers');
             ALL_USERS = await res.json();
             const list = document.getElementById('usersList');
-            list.innerHTML = `<div class="user-item" onclick="openChat('999', 'Бот')"><div class="avatar" style="background:linear-gradient(135deg, #ec4899, #8b5cf6);">🤖</div><div>Fluxx Bot</div></div>`;
+            list.innerHTML = `<div class="user-item" onclick="openChat('999', 'Бот')"><div class="user-avatar" style="background:linear-gradient(135deg, #ec4899, #8b5cf6);">🤖</div><div>Fluxx Bot</div></div>`;
             
             for (const phone in ALL_USERS) {
                 if (phone === MY_PHONE) continue;
                 const u = ALL_USERS[phone];
                 let avStyle = u.avatar ? `background-image: url(${u.avatar});` : '';
-                list.innerHTML += `<div class="user-item" onclick="openChat('${phone}', '${u.name}')"><div class="avatar" style="${avStyle}">${u.avatar ? '' : u.name[0].toUpperCase()}</div><div>${u.name}</div></div>`;
+                list.innerHTML += `<div class="user-item" onclick="openChat('${phone}', '${u.name}')"><div class="user-avatar" style="${avStyle}">${u.avatar ? '' : u.name[0].toUpperCase()}</div><div>${u.name}</div></div>`;
             }
-            calculateStats();
         }
 
         function openChat(phone, name) {
@@ -229,32 +131,11 @@
             document.getElementById('chatTitle').innerText = name;
             document.getElementById('inputArea').style.display = 'flex';
             document.getElementById('msgBox').innerHTML = '';
-            document.getElementById('infoBtn').style.display = phone === "999" ? 'none' : 'block';
             if (phone === "999" && botMsgs.length === 0) botMsgs.push({id:1, from:"999", to:MY_PHONE, text:"Привет! Я Fluxx Bot.", time:getTime()});
             renderMsgs(); 
         }
 
-        function showOtherProfile() {
-            if (!CURRENT_CHAT || CURRENT_CHAT === "999") return;
-            const u = ALL_USERS[CURRENT_CHAT];
-            if (!u) return;
-            
-            document.getElementById('otherName').innerText = u.name;
-            document.getElementById('otherUsername').innerText = u.username || "@user";
-            document.getElementById('otherPhone').innerText = "+" + CURRENT_CHAT;
-            document.getElementById('otherBirthday').innerText = u.birthday || "01.01.2000";
-            document.getElementById('otherBio').innerText = u.bio || "Привет, я использую Fluxx!";
-            
-            const av = document.getElementById('otherAvatar');
-            if (u.avatar) { av.style.backgroundImage = `url(${u.avatar})`; av.innerText = ""; }
-            else { av.style.backgroundImage = 'none'; av.innerText = u.name[0].toUpperCase(); }
-            
-            av.className = 'profile-avatar ' + (u.status || 'user');
-            document.getElementById('otherStatus').innerText = u.status === 'premium' ? '⭐ Premium' : u.status === 'vip' ? '👑 VIP' : 'Обычный';
-            
-            document.getElementById('chats-panel').style.display = 'none';
-            document.getElementById('other-profile-panel').style.display = 'flex';
-        }
+        function getTime() { return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
         async function sendMsg() {
             const text = document.getElementById('msgInput').value.trim();
@@ -268,14 +149,7 @@
                 await fetch('/sendMessage', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({from:MY_PHONE, to:CURRENT_CHAT, text:text}) });
                 document.getElementById('msgInput').value = '';
                 checkMsgs();
-                calculateStats();
             }
-        }
-
-        async function addReact(id, emoji) {
-            if (CURRENT_CHAT === "999") return;
-            await fetch('/addReaction', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id:String(id), reaction:emoji}) });
-            checkMsgs(); 
         }
 
         async function checkMsgs() {
@@ -296,6 +170,12 @@
                 let timeStr = m.time || getTime();
                 box.innerHTML += `
                     <div class="message ${m.from === MY_PHONE ? 'my-msg' : 'other-msg'}">
-                        ${m.text} <span class="msg-time">${timeStr}</span>
-                        <div class="reactions ${m.reaction ? 'active-reaction' : ''}">
-                            <span onclick="addReact('${m.id}',
+                        ${m.text} <span style="font-size:10px; opacity:0.7; float:right; margin-top:5px;">${timeStr}</span>
+                    </div>
+                `;
+            });
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>
