@@ -3,47 +3,73 @@ body.light { --bg: #f0f2f5; --panel: #fff; --border: #e1e1e1; --text: #000; --su
 * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-#login { width: 100%; display: flex; justify-content: center; align-items: center; }
-.login-box { background: var(--panel); padding: 40px; border-radius: 20px; border: 1px solid var(--border); text-align: center; width: 350px; }
-.login-box h1 { color: var(--accent); margin-bottom: 20px; }
-.login-box input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
-.login-box button { width: 100%; padding: 12px; margin-top: 10px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+/* АНИМАЦИИ */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes glow { 0% { box-shadow: 0 0 5px var(--accent); } 50% { box-shadow: 0 0 20px var(--accent); } 100% { box-shadow: 0 0 5px var(--accent); } }
+@keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
+/* ВХОД */
+#login { width: 100%; display: flex; justify-content: center; align-items: center; animation: fadeIn 0.8s ease-out; }
+.login-box { background: var(--panel); padding: 40px; border-radius: 20px; border: 1px solid var(--border); text-align: center; width: 350px; animation: popIn 0.5s ease-out; }
+.login-box h1 { color: var(--accent); margin-bottom: 20px; animation: glow 2s infinite; }
+.login-box input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); transition: 0.3s; }
+.login-box input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0, 255, 255, 0.3); }
+.login-box button { width: 100%; padding: 12px; margin-top: 10px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.login-box button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--accent); }
+
+/* ПРИЛОЖЕНИЕ */
 #app { display: none; width: 100%; }
-.sidebar { width: 320px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-.profile-header { padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
+.sidebar { width: 320px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; animation: slideIn 0.5s ease-out; }
+.profile-header { padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); transition: 0.2s; }
 .profile-header:hover { background: rgba(128, 128, 128, 0.1); }
-.avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: #000; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; background-size: cover; background-position: center; }
-.menu-items div { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 15px; }
-.menu-items div:hover { background: rgba(128, 128, 128, 0.1); }
+.avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: #000; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; background-size: cover; background-position: center; transition: 0.3s; }
+.avatar:hover { transform: rotate(10deg) scale(1.1); }
+.menu-items div { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 15px; transition: 0.2s; }
+.menu-items div:hover { background: rgba(128, 128, 128, 0.1); padding-left: 25px; }
 .section-title { padding: 15px 20px; color: var(--sub); font-size: 12px; font-weight: bold; }
 .user-list { overflow-y: auto; flex: 1; }
-.user-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
-.user-item:hover { background: rgba(128, 128, 128, 0.1); }
+.user-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); transition: 0.2s; animation: fadeIn 0.5s ease-out; }
+.user-item:hover { background: rgba(128, 128, 128, 0.1); transform: translateX(5px); }
 
+/* ЧАТ */
 .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg); }
 .chat-header { padding: 15px 20px; background: var(--panel); border-bottom: 1px solid var(--border); font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-#profileBtn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 8px; cursor: pointer; }
+#profileBtn { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+#profileBtn:hover { background: var(--accent); color: #000; }
 .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-.message { padding: 10px 15px; border-radius: 12px; max-width: 70%; word-wrap: break-word; position: relative; }
+.message { padding: 10px 15px; border-radius: 12px; max-width: 70%; word-wrap: break-word; position: relative; animation: popIn 0.3s ease-out; }
 .my-msg { background: var(--my-msg); align-self: flex-end; border-bottom-right-radius: 2px; }
 .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid var(--border); }
 .msg-time { font-size: 10px; opacity: 0.6; float: right; margin-top: 5px; margin-left: 10px; }
-.msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
-.reactions { position: absolute; bottom: -15px; right: 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 15px; padding: 2px 8px; font-size: 14px; display: none; gap: 5px; }
+.msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; transition: 0.3s; }
+.msg-img:hover { transform: scale(1.02); }
+
+.reactions { position: absolute; bottom: -15px; right: 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 15px; padding: 2px 8px; font-size: 14px; display: none; gap: 5px; animation: popIn 0.2s ease-out; }
 .message:hover .reactions { display: flex; }
-.reactions span { cursor: pointer; }
-.reactions span:hover { transform: scale(1.2); }
+.reactions span { cursor: pointer; transition: 0.2s; }
+.reactions span:hover { transform: scale(1.5); }
 
 .input-area { padding: 15px; background: var(--panel); border-top: 1px solid var(--border); display: flex; gap: 10px; }
-.input-area input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; }
-.input-area button { padding: 12px 20px; border-radius: 10px; background: var(--accent); color: #000; border: none; font-weight: bold; cursor: pointer; }
+.input-area input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; transition: 0.3s; }
+.input-area input:focus { border-color: var(--accent); }
+.input-area button { padding: 12px 20px; border-radius: 10px; background: var(--accent); color: #000; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.input-area button:hover { transform: scale(1.1); box-shadow: 0 0 10px var(--accent); }
 
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
-.modal-content { background: var(--panel); padding: 30px; border-radius: 20px; border: 1px solid var(--border); text-align: center; width: 350px; position: relative; }
-.close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
+/* МОДАЛКИ */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.3s; }
+.modal-content { background: var(--panel); padding: 30px; border-radius: 20px; border: 1px solid var(--border); text-align: center; width: 350px; position: relative; animation: popIn 0.3s ease-out; }
+.close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; transition: 0.2s; }
+.close-btn:hover { transform: rotate(90deg); color: #ef4444; }
 .modal-input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
-.action-btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; background: var(--accent); color: #000; font-weight: bold; cursor: pointer; }
+.action-btn { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; background: var(--accent); color: #000; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.action-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--accent); }
 .danger { background: #ef4444; color: white; }
+.danger:hover { box-shadow: 0 0 15px #ef4444; }
 .bio { color: var(--sub); font-size: 14px; margin: 10px 0; }
 .setting-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); }
+
+/* СКРОЛЛБАР */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
