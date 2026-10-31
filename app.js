@@ -67,12 +67,14 @@ function switchTab(tab) {
 async function login() {
     const name = document.getElementById('regName').value;
     const phone = document.getElementById('regPhone').value;
-    if (!name || !phone) return alert("Заполни поля!");
+    const password = document.getElementById('regPassword').value;
+    
+    if (!name || !phone || !password) return alert("Заполни все поля!");
 
     try {
         const res = await fetch('/login', {
             method: 'POST', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ name: name, phone: phone })
+            body: JSON.stringify({ name: name, phone: phone, password: password })
         });
         const data = await res.json();
         
@@ -85,6 +87,8 @@ async function login() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'flex';
             loadUsers(); setInterval(checkNewMessages, 1000);
+        } else {
+            alert(data.message);
         }
     } catch (e) { alert("Сервер выключен! Запусти 'node server.js' в терминале."); }
 }
@@ -170,10 +174,7 @@ function selectUser(phone, name, isBot) {
     document.getElementById('chat-messages').innerHTML = '';
     document.getElementById('secret-btn').style.display = isBot ? 'none' : 'block';
     document.getElementById('secret-btn').innerText = "🔥 Секретный чат";
-    
-    // ПРИНУДИТЕЛЬНО ПОКАЗЫВАЕМ КНОПКУ
     document.getElementById('info-btn').style.display = 'block';
-    
     lastMsgCount = 0;
     if (isBot) { if(botMessages.length === 0) botReply("Привет! Я Fluxx Bot. Напиши мне что-нибудь!"); }
     updateChat();
