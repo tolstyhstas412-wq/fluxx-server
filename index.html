@@ -5,20 +5,11 @@
     <title>Fluxx • 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --bg: #050505; --glass: rgba(20, 20, 35, 0.6); --border: rgba(0, 255, 255, 0.3); 
-            --accent: #00ffff; --text: #fff; --sub: #8b9bb4; 
-            --my-msg: linear-gradient(135deg, #6200ea, #00ffff); --other-msg: rgba(30, 30, 50, 0.9); 
-            --glow: 0 0 20px rgba(0, 255, 255, 0.5); 
-            --premium: #ffaa00; --vip: #ff00ff;
-        }
+        :root { --bg: #050505; --glass: rgba(20, 20, 35, 0.6); --border: rgba(0, 255, 255, 0.3); --accent: #00ffff; --text: #fff; --sub: #8b9bb4; --my-msg: linear-gradient(135deg, #6200ea, #00ffff); --other-msg: rgba(30, 30, 50, 0.9); --glow: 0 0 20px rgba(0, 255, 255, 0.5); --premium: #ffaa00; --vip: #ff00ff; }
         body.light { --bg: #f0f2f5; --glass: rgba(255, 255, 255, 0.8); --border: rgba(0, 0, 0, 0.1); --text: #000; --sub: #666; --other-msg: rgba(255, 255, 255, 0.9); }
-        
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #030008 80%); transition: 0.3s; }
         body.light { background-image: none; }
-
-        /* ВХОД */
         #login { width: 100%; display: flex; justify-content: center; align-items: center; }
         .box { background: var(--glass); border: 1px solid var(--border); backdrop-filter: blur(25px); padding: 50px; border-radius: 30px; text-align: center; width: 380px; box-shadow: var(--glow); animation: fadeIn 0.8s; }
         .box h1 { font-size: 42px; font-weight: 800; color: var(--accent); text-shadow: var(--glow); margin-bottom: 10px; }
@@ -26,42 +17,33 @@
         .box input:focus { border-color: var(--accent); box-shadow: var(--glow); }
         .box button { width: 100%; padding: 15px; background: var(--accent); border: none; color: #000; border-radius: 10px; cursor: pointer; font-weight: 800; margin-top: 20px; transition: 0.3s; }
         .box button:hover { transform: translateY(-3px); box-shadow: var(--glow); }
-
-        /* ИНТЕРФЕЙС */
         #app { display: none; width: 100%; }
         .nav-sidebar { width: 85px; background: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 30px; gap: 20px; }
         .nav-icon { font-size: 26px; cursor: pointer; color: var(--sub); transition: 0.3s; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; border-radius: 15px; }
         .nav-icon:hover, .nav-icon.active { background: rgba(0, 255, 255, 0.1); color: var(--accent); box-shadow: inset 0 0 10px rgba(0,255,255,0.2); }
         .content-area { display: flex; flex: 1; }
-        
         .sidebar { width: 320px; background: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
         .user-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
         .user-item:hover { background: rgba(0, 255, 255, 0.05); border-left: 3px solid var(--accent); }
         .avatar { width: 50px; height: 50px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-weight: 800; background: linear-gradient(135deg, #6200ea, #00ffff); border: 2px solid var(--border); background-size: cover; background-position: center; transition: 0.3s; }
         .avatar:hover { transform: scale(1.1); box-shadow: var(--glow); }
-
         .chat-area { flex: 1; display: flex; flex-direction: column; }
         .chat-header { padding: 20px 30px; background: var(--glass); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
         .chat-messages { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        
         .message { padding: 12px 18px; border-radius: 18px; max-width: 65%; position: relative; font-size: 15px; border: 1px solid var(--border); transition: 0.2s; }
         .message:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0, 255, 255, 0.2); }
         .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
         .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 4px; }
         .msg-time { font-size: 10px; opacity: 0.7; float: right; margin-left: 10px; margin-top: 5px; }
-
         .reactions { position: absolute; bottom: -15px; right: 10px; background: #000; border: 1px solid var(--accent); border-radius: 20px; padding: 2px 8px; font-size: 16px; display: none; gap: 5px; box-shadow: var(--glow); z-index: 10; }
         .message:hover .reactions { display: flex; }
         .reactions span { cursor: pointer; transition: 0.2s; }
         .reactions span:hover { transform: scale(1.3); }
-
         .input-area { padding: 20px 30px; background: var(--glass); border-top: 1px solid var(--border); display: flex; gap: 15px; }
         .input-area input { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; outline: none; transition: 0.3s; }
         .input-area input:focus { border-color: var(--accent); box-shadow: var(--glow); }
         .input-area button { padding: 15px; border-radius: 50%; background: var(--accent); color: #000; border: none; cursor: pointer; width: 50px; height: 50px; transition: 0.2s; }
         .input-area button:hover { box-shadow: var(--glow); transform: scale(1.1); }
-
-        /* ПРОФИЛИ */
         #profile-panel, #other-profile-panel { display: none; flex: 1; flex-direction: column; padding: 40px; align-items: center; overflow-y: auto; }
         .profile-card { background: var(--glass); border: 1px solid var(--border); padding: 40px; border-radius: 25px; text-align: center; width: 480px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; }
         .profile-avatar-container { position: relative; width: 130px; height: 130px; margin: 0 auto 25px auto; }
@@ -84,8 +66,6 @@
         .logout-btn:hover { background: #dc2626; box-shadow: 0 0 15px rgba(220, 38, 38, 0.5); }
         .edit-btn { background: rgba(0,255,255,0.1); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 10px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .edit-btn:hover { background: var(--accent); color: black; }
-
-        /* НАСТРОЙКИ */
         #settings-panel { display: none; flex: 1; flex-direction: column; padding: 40px; align-items: center; overflow-y: auto; }
         .settings-card { background: var(--glass); border: 1px solid var(--border); padding: 20px 30px; border-radius: 15px; width: 500px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .settings-label { font-weight: 600; }
@@ -95,7 +75,6 @@
         .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(24px); }
-
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
@@ -132,7 +111,6 @@
                 </div>
             </div>
             
-            <!-- МОЙ ПРОФИЛЬ -->
             <div id="profile-panel">
                 <div class="profile-card">
                     <div class="profile-avatar-container"><div class="profile-avatar" id="myAvatar">?</div></div>
@@ -158,7 +136,6 @@
                 </div>
             </div>
 
-            <!-- ПРОФИЛЬ ДРУГОГО -->
             <div id="other-profile-panel">
                 <div class="profile-card">
                     <button onclick="switchTab('chats')" style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:20px; cursor:pointer;">✖</button>
@@ -173,30 +150,14 @@
                 </div>
             </div>
 
-            <!-- НАСТРОЙКИ -->
             <div id="settings-panel">
                 <h2 style="color: var(--accent); margin-bottom: 30px;">Настройки</h2>
-                <div class="settings-card">
-                    <span class="settings-label">Светлая тема</span>
-                    <label class="switch"><input type="checkbox" id="themeToggle" onchange="toggleTheme()"><span class="slider"></span></label>
-                </div>
-                <div class="settings-card">
-                    <span class="settings-label">Звуки в чате</span>
-                    <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
-                </div>
-                <div class="settings-card">
-                    <span class="settings-label">Автоочистка истории (24 часа)</span>
-                    <label class="switch"><input type="checkbox" id="autoCleanToggle"><span class="slider"></span></label>
-                </div>
-                <div class="settings-card" style="cursor:pointer;" onclick="changePassword()">
-                    <span class="settings-label" style="color: #fbbf24;">🔐 Сменить пароль</span><span>→</span>
-                </div>
-                <div class="settings-card" style="cursor:pointer;" onclick="clearHistory()">
-                    <span class="settings-label" style="color: #ef4444;">🗑️ Очистить всю историю</span><span>→</span>
-                </div>
-                <div class="settings-card" style="cursor:pointer;" onclick="logout()">
-                    <span class="settings-label" style="color: #ef4444;">🚪 Выйти из аккаунта</span><span>→</span>
-                </div>
+                <div class="settings-card"><span class="settings-label">Светлая тема</span><label class="switch"><input type="checkbox" id="themeToggle" onchange="toggleTheme()"><span class="slider"></span></label></div>
+                <div class="settings-card"><span class="settings-label">Звуки в чате</span><label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label></div>
+                <div class="settings-card"><span class="settings-label">Автоочистка истории (24 часа)</span><label class="switch"><input type="checkbox" id="autoCleanToggle"><span class="slider"></span></label></div>
+                <div class="settings-card" style="cursor:pointer;" onclick="changePassword()"><span class="settings-label" style="color: #fbbf24;">🔐 Сменить пароль</span><span>→</span></div>
+                <div class="settings-card" style="cursor:pointer;" onclick="clearHistory()"><span class="settings-label" style="color: #ef4444;">🗑️ Очистить всю историю</span><span>→</span></div>
+                <div class="settings-card" style="cursor:pointer;" onclick="logout()"><span class="settings-label" style="color: #ef4444;">🚪 Выйти из аккаунта</span><span>→</span></div>
             </div>
 
         </div>
@@ -268,7 +229,7 @@
             document.getElementById('chatTitle').innerText = name;
             document.getElementById('inputArea').style.display = 'flex';
             document.getElementById('msgBox').innerHTML = '';
-            document.getElementById('infoBtn').style.display = phone === "999" ? 'none' : 'block'; // Прячем для бота
+            document.getElementById('infoBtn').style.display = phone === "999" ? 'none' : 'block';
             if (phone === "999" && botMsgs.length === 0) botMsgs.push({id:1, from:"999", to:MY_PHONE, text:"Привет! Я Fluxx Bot.", time:getTime()});
             renderMsgs(); 
         }
@@ -324,4 +285,17 @@
             renderMsgs(msgs);
         }
 
-        function renderMsgs(msgs = null)
+        function renderMsgs(msgs = null) {
+            let messages = msgs;
+            if (!messages) {
+                if (CURRENT_CHAT === "999") { messages = botMsgs; } else { return; }
+            }
+            const box = document.getElementById('msgBox');
+            box.innerHTML = '';
+            messages.forEach(m => {
+                let timeStr = m.time || getTime();
+                box.innerHTML += `
+                    <div class="message ${m.from === MY_PHONE ? 'my-msg' : 'other-msg'}">
+                        ${m.text} <span class="msg-time">${timeStr}</span>
+                        <div class="reactions ${m.reaction ? 'active-reaction' : ''}">
+                            <span onclick="addReact('${m.id}',
