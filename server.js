@@ -36,13 +36,9 @@ const server = http.createServer((req, res) => {
             const data = JSON.parse(body);
             if (!users[data.phone]) {
                 users[data.phone] = { 
-                    name: data.name, 
-                    password: data.password, 
-                    avatar: null,
+                    name: data.name, password: data.password, avatar: null,
                     username: "@" + data.name.toLowerCase().replace(/\s/g, ''),
-                    bio: "Привет, я использую Fluxx!",
-                    birthday: "01.01.2000",
-                    status: "user"
+                    bio: "Привет, я использую Fluxx!", birthday: "01.01.2000", status: "user"
                 };
                 saveDB();
             }
@@ -75,15 +71,38 @@ const server = http.createServer((req, res) => {
             res.writeHead(200); res.end();
         });
     }
+    else if (req.url === '/changePassword' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            const data = JSON.parse(body);
+            if (users[data.phone] && users[data.phone].password === data.oldPass) {
+                users[data.phone].password = data.newPass;
+                saveDB();
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({status: 'ok'}));
+            } else {
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({status: 'error', message: 'Неверный старый пароль!'}));
+            }
+        });
+    }
+    else if (req.url === '/clearHistory' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            const data = JSON.parse(body);
+            messages = messages.filter(m => m.from !== data.phone && m.to !== data.phone);
+            saveDB();
+            res.writeHead(200); res.end();
+        });
+    }
     else if (req.url === '/sendMessage' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
-            messages.push({
-                id: Date.now(), from: data.from, to: data.to, text: data.text,
-                reaction: null
-            });
+            messages.push({ id: Date.now(), from: data.from, to: data.to, text: data.text, reaction: null });
             saveDB();
             res.writeHead(200); res.end();
         });
