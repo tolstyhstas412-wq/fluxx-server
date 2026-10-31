@@ -78,17 +78,18 @@ const server = http.createServer((req, res) => {
             res.writeHead(200); res.end();
         });
     }
-    // --- РЕАКЦИИ ---
+    // --- ИСПРАВЛЕННЫЕ РЕАКЦИИ ---
     else if (req.url === '/addReaction' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
-            console.log("Пришла реакция:", data); // Для отладки
-            const msg = messages.find(m => m.id === data.id);
+            // Ищем сообщение как число
+            const msg = messages.find(m => String(m.id) === String(data.id));
             if (msg) { 
                 msg.reaction = data.reaction; 
                 saveDB(); 
+                console.log("Реакция сохранена:", msg.reaction);
             }
             res.writeHead(200); res.end();
         });
