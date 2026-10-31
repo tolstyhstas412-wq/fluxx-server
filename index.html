@@ -30,31 +30,13 @@
         .chat-header { padding: 20px 30px; background: var(--glass); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
         .chat-messages { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         
-        /* СООБЩЕНИЕ */
         .message { padding: 12px 18px; border-radius: 15px; max-width: 65%; position: relative; font-size: 15px; border: 1px solid var(--border); animation: slideUp 0.3s; }
         .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
         .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 2px; }
         .msg-time { font-size: 10px; opacity: 0.7; float: right; margin-left: 10px; margin-top: 5px; }
         
-        /* РЕАКЦИИ (СКРЫТЫ ПО УМОЛЧАНИЮ) */
-        .reactions { 
-            position: absolute; 
-            bottom: -20px; 
-            right: 10px; 
-            background: var(--glass); 
-            border: 1px solid var(--accent); 
-            border-radius: 20px; 
-            padding: 5px 10px; 
-            font-size: 16px; 
-            display: none; /* Скрыто */
-            gap: 8px; 
-            box-shadow: var(--glow); 
-            z-index: 10;
-        }
-        /* ПОКАЗЫВАЕМ ПРИ НАВЕДЕНИИ */
-        .message:hover .reactions { 
-            display: flex; 
-        }
+        .reactions { position: absolute; bottom: -15px; right: 10px; background: #000; border: 1px solid var(--accent); border-radius: 20px; padding: 2px 8px; font-size: 16px; display: none; gap: 5px; box-shadow: var(--glow); z-index: 10; }
+        .message:hover .reactions { display: flex; }
         .reactions span { cursor: pointer; transition: 0.2s; }
         .reactions span:hover { transform: scale(1.3); }
 
@@ -225,6 +207,8 @@
         async function addReact(id, emoji) {
             if (CURRENT_CHAT === "999") return;
             await fetch('/addReaction', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id:id, reaction:emoji}) });
+            // ПРИНУДИТЕЛЬНОЕ ОБНОВЛЕНИЕ
+            lastCount = 0; 
             checkMsgs();
         }
 
