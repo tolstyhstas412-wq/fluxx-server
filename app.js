@@ -73,7 +73,10 @@ async function sendMsg() {
         addMsgToScreen({from: MY_PHONE, text: text, time: getTime()});
         document.getElementById('msgInput').value = '';
         setTimeout(() => {
-            addMsgToScreen({from: "999", text: "Интересно! Расскажи еще.", time: getTime()});
+            let reply = "Интересно! Расскажи еще.";
+            if (text.toLowerCase().includes("привет")) reply = "Привет-привет! 👋";
+            if (text.toLowerCase().includes("как дела")) reply = "У меня всё отлично!";
+            addMsgToScreen({from: "999", text: reply, time: getTime()});
             playSound();
         }, 1000);
     } else {
@@ -110,6 +113,7 @@ async function checkMsgs() {
                 <div class="reactions">
                     <span onclick="addReaction(${m.id}, '❤️')">❤️</span>
                     <span onclick="addReaction(${m.id}, '🔥')">🔥</span>
+                    <span onclick="addReaction(${m.id}, '😂')">😂</span>
                     ${m.reaction ? m.reaction : ''}
                 </div>
             </div>
@@ -171,6 +175,14 @@ async function clearChat() {
     await fetch('/clearChat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({user1: MY_PHONE, user2: CURRENT_CHAT}) });
     document.getElementById('msgBox').innerHTML = '';
     closeModal('otherProfile');
+}
+
+async function createGroup() {
+    const name = document.getElementById('groupName').value;
+    if (!name) return alert("Введи название");
+    await fetch('/createGroup', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name: name, phone: MY_PHONE}) });
+    closeModal('createGroup');
+    alert("Группа создана!");
 }
 
 function playSound() {
