@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             const data = JSON.parse(body);
             if (!users[data.phone]) {
-                users[data.phone] = { name: data.name, password: data.password, status: "user", theme: "dark" };
+                users[data.phone] = { name: data.name, password: data.password, avatar: null };
                 saveDB();
             }
             if (users[data.phone].password === data.password) {
@@ -51,14 +51,13 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify(users));
     }
-    else if (req.url === '/updateProfile' && req.method === 'POST') {
+    else if (req.url === '/updateAvatar' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
             if (users[data.phone]) {
-                if(data.status) users[data.phone].status = data.status;
-                if(data.theme) users[data.phone].theme = data.theme;
+                users[data.phone].avatar = data.avatar;
                 saveDB();
             }
             res.writeHead(200); res.end();
@@ -98,4 +97,4 @@ const server = http.createServer((req, res) => {
     } else { res.writeHead(404); res.end(); }
 });
 
-server.listen(3000, () => console.log('Fluxx ULTIMATE запущен!'));
+server.listen(3000, () => console.log('Сервер запущен!'));
