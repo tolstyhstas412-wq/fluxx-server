@@ -3,7 +3,7 @@ const fs = require('fs');
 
 let users = {};
 let messages = [];
-let onlineUsers = new Set(); // Кто сейчас в сети
+let onlineUsers = new Set();
 
 if (fs.existsSync('data.json')) {
     try {
@@ -37,20 +37,40 @@ const server = http.createServer((req, res) => {
             }
         });
     } 
+    // --- ЛОГИН С ПАРОЛЕМ ---
     else if (req.url === '/login' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
+            
             if (!users[data.phone]) {
-                users[data.phone] = { name: data.name, status: "user", avatar: "blue", theme: "dark" };
+                // Регистрация: сохраняем пароль
+                users[data.phone] = { 
+                    name: data.name, 
+                    password: data.password, // <-- СОХРАНЯЕМ ПАРОЛЬ
+                    status: "user", 
+                    avatar: "blue", 
+                    theme: "dark" 
+                };
                 saveDB();
+                onlineUsers.add(data.phone);
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({status: 'ok', user: users[data.phone]}));
+            } else {
+                // Вход: проверяем пароль
+                if (users[data.phone].password === data.password) {
+                    onlineUsers.add(data.phone);
+                    res.writeHead(200, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({status: 'ok', user: users[data.phone]}));
+                } else {
+                    res.writeHead(200, {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify({status: 'error', message: 'Неверный пароль!'}));
+                }
             }
-            onlineUsers.add(data.phone);
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify({status: 'ok', user: users[data.phone]}));
         });
     }
+    // -----------------------
     else if (req.url === '/logout' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
