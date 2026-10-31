@@ -2,14 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Fluxx • 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Fluxx 2026</title>
     <style>
         :root { --bg: #030008; --glass: rgba(20, 20, 35, 0.7); --border: rgba(0, 255, 255, 0.3); --accent: #00ffff; --text: #fff; --sub: #8b9bb4; --my-msg: linear-gradient(135deg, #6200ea, #00ffff); --other-msg: rgba(30, 30, 50, 0.9); --glow: 0 0 20px rgba(0, 255, 255, 0.6); }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #030008 80%); }
         
-        /* ВХОД */
         #login { width: 100%; display: flex; justify-content: center; align-items: center; }
         .box { background: var(--glass); border: 1px solid var(--border); backdrop-filter: blur(20px); padding: 50px; border-radius: 20px; text-align: center; width: 380px; box-shadow: var(--glow); }
         .box h1 { font-size: 42px; font-weight: 800; color: var(--accent); text-shadow: var(--glow); margin-bottom: 10px; }
@@ -17,7 +15,6 @@
         .box button { width: 100%; padding: 15px; background: var(--accent); border: none; color: #000; border-radius: 10px; cursor: pointer; font-weight: 800; margin-top: 20px; }
         .box button:hover { box-shadow: var(--glow); }
 
-        /* ПРИЛОЖЕНИЕ */
         #app { display: none; width: 100%; }
         .nav-sidebar { width: 85px; background: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 30px; gap: 20px; }
         .nav-icon { font-size: 26px; cursor: pointer; color: var(--sub); transition: 0.3s; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; border-radius: 15px; }
@@ -27,7 +24,7 @@
         .sidebar { width: 320px; background: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
         .user-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
         .user-item:hover { background: rgba(0, 255, 255, 0.05); border-left: 3px solid var(--accent); }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 800; background: linear-gradient(135deg, #6200ea, #00ffff); border: 2px solid var(--border); }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 800; background: linear-gradient(135deg, #6200ea, #00ffff); border: 2px solid var(--border); background-size: cover; background-position: center; }
         
         .chat-area { flex: 1; display: flex; flex-direction: column; }
         .chat-header { padding: 20px 30px; background: var(--glass); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
@@ -41,19 +38,20 @@
         .message:hover .reactions { display: flex; }
         .reactions span { cursor: pointer; transition: 0.2s; }
         .reactions span:hover { transform: scale(1.3); }
+        .active-reaction { display: flex !important; }
 
         .input-area { padding: 20px 30px; background: var(--glass); border-top: 1px solid var(--border); display: flex; gap: 15px; }
         .input-area input { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; outline: none; }
         .input-area button { padding: 15px; border-radius: 50%; background: var(--accent); color: #000; border: none; cursor: pointer; width: 50px; height: 50px; transition: 0.2s; }
         .input-area button:hover { box-shadow: var(--glow); transform: scale(1.1); }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--glass); padding: 30px; border-radius: 15px; border: 1px solid var(--accent); text-align: center; width: 300px; box-shadow: var(--glow); }
-
         #profile-panel, #settings-panel { display: none; flex: 1; flex-direction: column; padding: 40px; align-items: center; }
         .profile-card { background: var(--glass); border: 1px solid var(--border); padding: 40px; border-radius: 20px; text-align: center; width: 400px; }
-        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 20px auto; font-size: 40px; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #6200ea, #00ffff); border: 3px solid var(--accent); box-shadow: var(--glow); }
+        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 20px auto; font-size: 40px; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #6200ea, #00ffff); border: 3px solid var(--accent); box-shadow: var(--glow); background-size: cover; background-position: center; }
         .settings-card { background: var(--glass); border: 1px solid var(--border); padding: 20px; border-radius: 15px; width: 400px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: var(--glass); padding: 30px; border-radius: 15px; border: 1px solid var(--accent); text-align: center; width: 300px; box-shadow: var(--glow); }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -95,6 +93,9 @@
                     <div class="profile-avatar" id="myAvatar">?</div>
                     <h2 id="myName">Имя</h2>
                     <p id="myPhone">Номер</p>
+                    <input type="file" id="avatarUpload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
+                    <button onclick="document.getElementById('avatarUpload').click()" style="background:rgba(255,255,255,0.1); color:white; border:none; padding:10px 20px; border-radius:10px; margin-top:10px; cursor:pointer;">📷 Сменить аватарку</button>
+                    <br>
                     <button onclick="logout()" style="background:#b91c1c; color:white; border:none; padding:10px 20px; border-radius:10px; margin-top:20px; cursor:pointer;">Выйти</button>
                 </div>
             </div>
@@ -115,7 +116,7 @@
     </div>
 
     <script>
-        let MY_PHONE = "", MY_NAME = "", CURRENT_CHAT = "", lastCount = 0, botMsgs = [];
+        let MY_PHONE = "", MY_NAME = "", MY_AVATAR = null, CURRENT_CHAT = "", lastCount = 0, botMsgs = [];
         let ALL_USERS = {};
 
         async function doLogin() {
@@ -128,14 +129,14 @@
             const data = await res.json();
             
             if (data.status === 'ok') {
-                MY_PHONE = p; MY_NAME = n;
+                MY_PHONE = p; MY_NAME = n; MY_AVATAR = data.user.avatar;
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 loadUsers(); setInterval(checkMsgs, 1000);
             } else { alert(data.message); }
         }
 
-        function logout() { localStorage.clear(); location.reload(); }
+        function logout() { location.reload(); }
 
         function switchTab(tab) {
             document.getElementById('chats-panel').style.display = 'none';
@@ -144,7 +145,15 @@
             document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
 
             if (tab === 'chats') { document.getElementById('chats-panel').style.display = 'flex'; document.querySelectorAll('.nav-icon')[0].classList.add('active'); }
-            if (tab === 'profile') { document.getElementById('profile-panel').style.display = 'flex'; document.querySelectorAll('.nav-icon')[1].classList.add('active'); document.getElementById('myName').innerText = MY_NAME; document.getElementById('myPhone').innerText = MY_PHONE; document.getElementById('myAvatar').innerText = MY_NAME[0].toUpperCase(); }
+            if (tab === 'profile') { 
+                document.getElementById('profile-panel').style.display = 'flex'; 
+                document.querySelectorAll('.nav-icon')[1].classList.add('active'); 
+                document.getElementById('myName').innerText = MY_NAME; 
+                document.getElementById('myPhone').innerText = MY_PHONE; 
+                const av = document.getElementById('myAvatar');
+                if (MY_AVATAR) { av.style.backgroundImage = `url(${MY_AVATAR})`; av.innerText = ""; }
+                else { av.style.backgroundImage = 'none'; av.innerText = MY_NAME[0].toUpperCase(); }
+            }
             if (tab === 'settings') { document.getElementById('settings-panel').style.display = 'flex'; document.querySelectorAll('.nav-icon')[2].classList.add('active'); }
         }
 
@@ -156,7 +165,9 @@
             
             for (const phone in ALL_USERS) {
                 if (phone === MY_PHONE) continue;
-                list.innerHTML += `<div class="user-item" onclick="openChat('${phone}', '${ALL_USERS[phone].name}')"><div class="avatar">${ALL_USERS[phone].name[0].toUpperCase()}</div><div>${ALL_USERS[phone].name}</div></div>`;
+                const u = ALL_USERS[phone];
+                let avStyle = u.avatar ? `background-image: url(${u.avatar});` : '';
+                list.innerHTML += `<div class="user-item" onclick="openChat('${phone}', '${u.name}')"><div class="avatar" style="${avStyle}">${u.avatar ? '' : u.name[0].toUpperCase()}</div><div>${u.name}</div></div>`;
             }
         }
 
@@ -216,7 +227,7 @@
                     box.innerHTML += `
                         <div class="message ${m.from === MY_PHONE ? 'my-msg' : 'other-msg'}">
                             ${m.text} <span class="msg-time">${m.time}</span>
-                            <div class="reactions">
+                            <div class="reactions ${m.reaction ? 'active-reaction' : ''}">
                                 <span onclick="addReact(${m.id}, '❤️')">❤️</span>
                                 <span onclick="addReact(${m.id}, '🔥')">🔥</span>
                                 <span onclick="addReact(${m.id}, '😂')">😂</span>
@@ -227,6 +238,18 @@
                 });
                 box.scrollTop = box.scrollHeight;
             }
+        }
+
+        function uploadAvatar(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                MY_AVATAR = e.target.result;
+                fetch('/updateAvatar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone: MY_PHONE, avatar: MY_AVATAR}) });
+                switchTab('profile');
+                loadUsers();
+            };
+            reader.readAsDataURL(file);
         }
 
         function toggleTheme() {
