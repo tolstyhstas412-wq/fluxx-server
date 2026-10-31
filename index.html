@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Fluxx • 3.0</title>
+    <title>Fluxx</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #050505; --panel: #0e1621; --border: #242f3d; --accent: #00ffff; --text: #fff; --sub: #8b9bb4; --my-msg: #2b5278; --other-msg: #182533; }
@@ -23,12 +23,7 @@
         .menu-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); }
         .menu-item:hover { background: var(--panel); }
 
-        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--panel); transition: 0.3s; }
-        /* Фоны чата */
-        .bg-space { background: url('https://i.imgur.com/8yJ8y8y.jpeg') center/cover; }
-        .bg-forest { background: url('https://i.imgur.com/8yJ8y8y.jpeg') center/cover; }
-        .bg-city { background: url('https://i.imgur.com/8yJ8y8y.jpeg') center/cover; }
-
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--panel); }
         .chat-header { padding: 15px 20px; background: var(--bg); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
         .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .message { padding: 10px 15px; border-radius: 12px; max-width: 70%; font-size: 15px; cursor: pointer; position: relative; }
@@ -40,7 +35,7 @@
         .input-area input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); color: white; outline: none; }
         .input-area button { padding: 12px; border-radius: 10px; background: var(--accent); color: #000; border: none; cursor: pointer; font-weight: bold; }
 
-        .emoji-picker { position: absolute; bottom: 60px; left: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 15px; padding: 10px; display: none; flex-wrap: wrap; width: 250px; gap: 5px; }
+        .emoji-picker { position: absolute; bottom: 60px; left: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 15px; padding: 10px; display: none; flex-wrap: wrap; width: 250px; gap: 5px; z-index: 100; }
         .emoji-picker span { cursor: pointer; font-size: 24px; padding: 5px; border-radius: 5px; }
         .emoji-picker span:hover { background: var(--panel); }
 
@@ -55,17 +50,17 @@
 <body>
     <div id="login">
         <div class="login-box">
-            <h1>Fluxx 3.0</h1>
+            <h1>Fluxx</h1>
             <input type="text" id="name" placeholder="Имя">
             <input type="text" id="phone" placeholder="Номер">
             <input type="password" id="pass" placeholder="Пароль">
-            <button onclick="doLogin()">Войти</button>
+            <button onclick="doLogin()">Войти в сеть</button>
         </div>
     </div>
 
     <div id="app">
         <div class="sidebar-menu">
-            <div class="menu-header">
+            <div class="menu-header" onclick="openProfile()">
                 <div class="menu-avatar" id="myAvatar">?</div>
                 <div>
                     <h3 id="myName" style="margin:0;">Имя</h3>
@@ -105,12 +100,9 @@
 
     <script>
         let MY_PHONE = "", MY_NAME = "", CURRENT_CHAT = "", botMsgs = [], ALL_USERS = {};
-        let unreadCounts = {};
-        let typingTimeout;
 
         function getTime() { return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
-        // Звук
         function playSound() {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator();
@@ -125,19 +117,21 @@
             const pass = document.getElementById('pass').value;
             if (!n || !p || !pass) return alert("Заполни поля!");
 
-            const res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name:n, phone:p, password:pass}) });
-            const data = await res.json();
-            
-            if (data.status === 'ok') {
-                MY_PHONE = p; MY_NAME = n;
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                document.getElementById('myName').innerText = n;
-                document.getElementById('myPhone').innerText = p;
-                document.getElementById('myAvatar').innerText = n[0].toUpperCase();
-                loadUsers(); 
-                setInterval(() => { if (CURRENT_CHAT && CURRENT_CHAT !== "999") checkMsgs(); }, 1000);
-            } else { alert(data.message); }
+            try {
+                const res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name:n, phone:p, password:pass}) });
+                const data = await res.json();
+                
+                if (data.status === 'ok') {
+                    MY_PHONE = p; MY_NAME = n;
+                    document.getElementById('login').style.display = 'none';
+                    document.getElementById('app').style.display = 'flex';
+                    document.getElementById('myName').innerText = n;
+                    document.getElementById('myPhone').innerText = p;
+                    document.getElementById('myAvatar').innerText = n[0].toUpperCase();
+                    loadUsers(); 
+                    setInterval(() => { if (CURRENT_CHAT && CURRENT_CHAT !== "999") checkMsgs(); }, 1000);
+                } else { alert(data.message); }
+            } catch(e) { alert("Сервер не отвечает. Подожди минуту."); }
         }
 
         async function loadUsers() {
@@ -150,29 +144,24 @@
                 if (phone === MY_PHONE) continue;
                 const u = ALL_USERS[phone];
                 let avStyle = u.avatar ? `background-image: url(${u.avatar});` : '';
-                let badge = unreadCounts[phone] ? `<span class="unread-badge">${unreadCounts[phone]}</span>` : '';
-                list.innerHTML += `<div class="user-item" onclick="openChat('${phone}', '${u.name}')"><div class="user-avatar" style="${avStyle}">${u.avatar ? '' : u.name[0].toUpperCase()}</div><div>${u.name}</div>${badge}</div>`;
+                list.innerHTML += `<div class="user-item" onclick="openChat('${phone}', '${u.name}')"><div class="user-avatar" style="${avStyle}">${u.avatar ? '' : u.name[0].toUpperCase()}</div><div>${u.name}</div></div>`;
             }
         }
 
         function openChat(phone, name) {
             CURRENT_CHAT = phone;
-            unreadCounts[phone] = 0; // Сбрасываем непрочитанные
             document.getElementById('chatTitle').innerText = name;
             document.getElementById('inputArea').style.display = 'flex';
             document.getElementById('msgBox').innerHTML = '';
             document.getElementById('infoBtn').style.display = phone === "999" ? 'none' : 'block';
             if (phone === "999" && botMsgs.length === 0) botMsgs.push({id:1, from:"999", to:MY_PHONE, text:"Привет! Я Fluxx Bot.", time:getTime()});
             renderMsgs(); 
-            loadUsers(); // Обновляем бейджи
         }
 
-        // Статус "Печатает"
         function handleKeyPress(e) { 
             if (e.key === 'Enter') {
                 sendMsg();
             } else {
-                // Отправляем статус на сервер
                 fetch('/typing', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone: MY_PHONE}) });
             }
         }
@@ -198,12 +187,6 @@
             const msgs = await res.json();
             renderMsgs(msgs);
             
-            // Проверка на новые сообщения
-            if (msgs.length > (botMsgs.length + 1)) {
-                playSound();
-            }
-            
-            // Проверка печати
             const typingRes = await fetch('/getTyping');
             const typing = await typingRes.json();
             if (typing.includes(CURRENT_CHAT)) {
@@ -231,13 +214,11 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // Копирование текста
         function copyText(text) {
             navigator.clipboard.writeText(text);
             alert("Скопировано: " + text);
         }
 
-        // Эмодзи
         function toggleEmoji() {
             const picker = document.getElementById('emojiPicker');
             picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex';
@@ -249,20 +230,10 @@
             input.focus();
         }
 
-        // Настройки
-        function openSettings() {
-            alert("Настройки в разработке (следующий этап).");
-        }
-
-        function clearHistory() {
-            if (confirm("Удалить всю историю?")) {
-                document.getElementById('msgBox').innerHTML = '';
-            }
-        }
-
-        function showProfile() {
-            alert("Профиль в разработке (следующий этап).");
-        }
+        function openProfile() { alert("Профиль в разработке"); }
+        function openSettings() { alert("Настройки в разработке"); }
+        function clearHistory() { alert("Очистка в разработке"); }
+        function showProfile() { alert("Профиль в разработке"); }
     </script>
 </body>
 </html>
