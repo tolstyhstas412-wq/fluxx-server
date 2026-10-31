@@ -7,14 +7,14 @@
 </head>
 <body>
     <!-- Модалка профиля собеседника -->
-    <div id="info-modal">
-        <div class="modal-card">
-            <button class="modal-close" onclick="closeInfo()">×</button>
-            <div class="modal-avatar" id="info-avatar">?</div>
-            <h2 id="info-name">Имя</h2>
-            <p id="info-status" style="color:var(--gold); margin-bottom: 20px;">Статус</p>
-            <p id="info-phone" style="color:var(--text-sub); font-size: 14px;">Номер</p>
-            <button class="status-btn" style="background: var(--accent); margin-top: 20px;" onclick="closeInfo()">Закрыть</button>
+    <div id="info-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
+        <div class="modal-card" style="background:var(--glass); border:1px solid var(--glass-border); padding:40px; border-radius:30px; text-align:center; width:380px; position:relative;">
+            <button class="modal-close" onclick="closeInfo()" style="position:absolute; top:15px; right:20px; background:none; border:none; color:white; font-size:24px; cursor:pointer;">×</button>
+            <div class="modal-avatar" id="info-avatar" style="width:120px; height:120px; border-radius:40px; margin:0 auto 20px auto; font-size:50px; display:flex; justify-content:center; align-items:center; background-size:cover; background-position:center; box-shadow:0 10px 30px rgba(0,0,0,0.3); border:2px solid var(--glass-border);">?</div>
+            <h2 id="info-name" style="margin-bottom:10px;">Имя</h2>
+            <p id="info-status" style="color:var(--gold); margin-bottom:20px;">Статус</p>
+            <p id="info-phone" style="color:var(--text-sub); font-size:14px;">Номер</p>
+            <button class="status-btn" style="background:var(--accent); margin-top:20px;" onclick="closeInfo()">Закрыть</button>
         </div>
     </div>
 
@@ -41,7 +41,8 @@
                     <div class="chat-header">
                         <div class="chat-header-info">
                             <span id="chat-with">Выберите собеседника</span>
-                            <button class="btn-info" id="info-btn" style="display:none;" onclick="openInfo()" title="Информация">ℹ️</button>
+                            <!-- Кнопка теперь видна всегда -->
+                            <button class="btn-info" id="info-btn" onclick="openInfo()" title="Информация">ℹ️</button>
                         </div>
                         <button class="btn-secret" style="display:none;" id="secret-btn" onclick="toggleSecret()">🔥 Секретный чат</button>
                     </div>
