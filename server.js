@@ -84,10 +84,7 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             const data = JSON.parse(body);
             const msg = messages.find(m => String(m.id) === String(data.id));
-            if (msg) { 
-                msg.reaction = data.reaction; 
-                saveDB(); 
-            }
+            if (msg) { msg.reaction = data.reaction; saveDB(); }
             res.writeHead(200); res.end();
         });
     }
