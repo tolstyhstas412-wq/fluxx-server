@@ -130,21 +130,16 @@ async function loadUsers() {
             let dot = '<div class="online-dot"></div>';
             
             div.innerHTML = `<div class="${avatarClass}" style="${avatarStyle}">${avatarText}${dot}</div><div><div class="nickname ${statusColor}">${u.name} ${crown}</div><div style="font-size:12px; color:var(--text-sub);">${phone}</div></div>`;
-            
-            // КЛИК ПО ЧЕЛОВЕКУ ОТКРЫВАЕТ ЧАТ
             div.onclick = () => selectUser(phone, u.name, false);
-            
-            // ДВОЙНОЙ КЛИК ПОЛЬЗОВАТЕЛЮ ОТКРЫВАЕТ ПРОФИЛЬ
             div.ondblclick = () => openInfo(phone);
-            
             list.appendChild(div);
         }
     } catch (e) { console.log("Сервер не отвечает"); }
 }
 
-// ФУНКЦИЯ ОТКРЫТИЯ ПРОФИЛЯ
 function openInfo(phone) {
-    if (phone === "999") return;
+    if (!phone || phone === "999") phone = CURRENT_CHAT;
+    if (!phone || phone === "999") return;
     const u = ALL_USERS[phone];
     if (!u) return;
     
@@ -176,9 +171,8 @@ function selectUser(phone, name, isBot) {
     document.getElementById('secret-btn').style.display = isBot ? 'none' : 'block';
     document.getElementById('secret-btn').innerText = "🔥 Секретный чат";
     
-    // Показываем кнопку инфо в шапке для реальных людей
-    document.getElementById('info-btn').style.display = (isBot || phone === MY_PHONE) ? 'none' : 'block';
-    document.getElementById('info-btn').onclick = () => openInfo(phone);
+    // ПРИНУДИТЕЛЬНО ПОКАЗЫВАЕМ КНОПКУ
+    document.getElementById('info-btn').style.display = 'block';
     
     lastMsgCount = 0;
     if (isBot) { if(botMessages.length === 0) botReply("Привет! Я Fluxx Bot. Напиши мне что-нибудь!"); }
