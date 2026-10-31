@@ -29,15 +29,34 @@
         .chat-area { flex: 1; display: flex; flex-direction: column; }
         .chat-header { padding: 20px 30px; background: var(--glass); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
         .chat-messages { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* СООБЩЕНИЕ */
         .message { padding: 12px 18px; border-radius: 15px; max-width: 65%; position: relative; font-size: 15px; border: 1px solid var(--border); animation: slideUp 0.3s; }
         .my-msg { background: var(--my-msg); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
         .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 2px; }
         .msg-time { font-size: 10px; opacity: 0.7; float: right; margin-left: 10px; margin-top: 5px; }
         
-        /* РЕАКЦИИ ВСЕГДА ВИДНЫ */
-        .reactions { margin-top: 10px; display: flex; gap: 5px; }
-        .reactions span { cursor: pointer; font-size: 18px; transition: 0.2s; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 10px; }
-        .reactions span:hover { transform: scale(1.2); background: rgba(0,255,255,0.2); }
+        /* РЕАКЦИИ (СКРЫТЫ ПО УМОЛЧАНИЮ) */
+        .reactions { 
+            position: absolute; 
+            bottom: -20px; 
+            right: 10px; 
+            background: var(--glass); 
+            border: 1px solid var(--accent); 
+            border-radius: 20px; 
+            padding: 5px 10px; 
+            font-size: 16px; 
+            display: none; /* Скрыто */
+            gap: 8px; 
+            box-shadow: var(--glow); 
+            z-index: 10;
+        }
+        /* ПОКАЗЫВАЕМ ПРИ НАВЕДЕНИИ */
+        .message:hover .reactions { 
+            display: flex; 
+        }
+        .reactions span { cursor: pointer; transition: 0.2s; }
+        .reactions span:hover { transform: scale(1.3); }
 
         .input-area { padding: 20px 30px; background: var(--glass); border-top: 1px solid var(--border); display: flex; gap: 15px; }
         .input-area input { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; outline: none; }
@@ -205,7 +224,6 @@
 
         async function addReact(id, emoji) {
             if (CURRENT_CHAT === "999") return;
-            console.log("Ставлю реакцию:", id, emoji); // Для проверки
             await fetch('/addReaction', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id:id, reaction:emoji}) });
             checkMsgs();
         }
