@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             const data = JSON.parse(body);
             if (!users[data.phone]) {
-                users[data.phone] = { name: data.name, password: data.password, avatar: null };
+                users[data.phone] = { name: data.name, password: data.password, avatar: null, theme: 'dark' };
                 saveDB();
             }
             if (users[data.phone].password === data.password) {
@@ -63,6 +63,18 @@ const server = http.createServer((req, res) => {
             res.writeHead(200); res.end();
         });
     }
+    else if (req.url === '/updateTheme' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            const data = JSON.parse(body);
+            if (users[data.phone]) {
+                users[data.phone].theme = data.theme;
+                saveDB();
+            }
+            res.writeHead(200); res.end();
+        });
+    }
     else if (req.url === '/sendMessage' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
@@ -78,19 +90,13 @@ const server = http.createServer((req, res) => {
             res.writeHead(200); res.end();
         });
     }
-    // --- ИСПРАВЛЕННЫЕ РЕАКЦИИ ---
     else if (req.url === '/addReaction' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', () => {
             const data = JSON.parse(body);
-            // Ищем сообщение как число
             const msg = messages.find(m => String(m.id) === String(data.id));
-            if (msg) { 
-                msg.reaction = data.reaction; 
-                saveDB(); 
-                console.log("Реакция сохранена:", msg.reaction);
-            }
+            if (msg) { msg.reaction = data.reaction; saveDB(); }
             res.writeHead(200); res.end();
         });
     }
@@ -103,4 +109,4 @@ const server = http.createServer((req, res) => {
     } else { res.writeHead(404); res.end(); }
 });
 
-server.listen(3000, () => console.log('Сервер запущен!'));
+server.listen(3000, () => console.log('Fluxx запущен!'));
