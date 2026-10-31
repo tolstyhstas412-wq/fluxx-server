@@ -4,30 +4,60 @@
     <meta charset="UTF-8">
     <title>Fluxx</title>
     <style>
-        body { background: #050505; color: white; font-family: Arial; margin: 0; display: flex; height: 100vh; }
-        #login { width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .box { background: rgba(20,20,30,0.8); padding: 40px; border-radius: 15px; border: 1px solid #00ffff; box-shadow: 0 0 15px #00ffff; text-align: center; width: 300px; }
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; }
-        input { background: #111; color: white; border: 1px solid #333; }
-        button { background: #00ffff; color: black; font-weight: bold; cursor: pointer; }
+        :root { --bg: #09090b; --panel: #18181b; --border: #27272a; --accent: #f97316; --text: #f4f4f5; --sub: #a1a1aa; --my-msg: #f97316; --other-msg: #27272a; }
+        * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Вход */
+        #login { width: 100%; display: flex; justify-content: center; align-items: center; }
+        .box { background: var(--panel); border: 1px solid var(--border); padding: 40px; border-radius: 15px; text-align: center; width: 350px; }
+        .box h1 { font-size: 36px; font-weight: 800; color: var(--accent); margin-bottom: 20px; }
+        .box input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: #000; color: var(--text); outline: none; }
+        .box button { width: 100%; padding: 12px; background: var(--accent); border: none; color: #000; border-radius: 8px; cursor: pointer; font-weight: 700; margin-top: 10px; }
+
+        /* Приложение */
         #app { display: none; width: 100%; }
-        .sidebar { width: 250px; background: #111; border-right: 1px solid #333; }
-        .user { padding: 15px; border-bottom: 1px solid #333; cursor: pointer; }
-        .user:hover { background: #222; }
-        .chat { flex: 1; display: flex; flex-direction: column; }
-        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px; border-radius: 10px; max-width: 60%; position: relative; }
-        .my { background: #0044ff; align-self: flex-end; }
-        .other { background: #222; align-self: flex-start; }
-        .input-area { padding: 15px; background: #111; display: flex; gap: 10px; }
-        .reactions { position: absolute; bottom: -15px; right: 5px; background: black; border: 1px solid #00ffff; border-radius: 15px; padding: 2px 8px; font-size: 14px; display: none; gap: 5px; cursor: pointer; }
-        .msg:hover .reactions { display: flex; }
+        .nav-sidebar { width: 80px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 20px; }
+        .nav-icon { font-size: 24px; cursor: pointer; color: var(--sub); width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; border-radius: 10px; transition: 0.2s; }
+        .nav-icon:hover, .nav-icon.active { background: var(--border); color: var(--text); }
+        .content-area { display: flex; flex: 1; }
+        
+        .sidebar { width: 300px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .user-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); transition: 0.2s; }
+        .user-item:hover { background: #27272a; }
+        .avatar { width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: 800; background: var(--accent); color: #000; background-size: cover; background-position: center; }
+
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg); }
+        .chat-header { padding: 20px; background: var(--panel); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        
+        .message { padding: 10px 15px; border-radius: 12px; max-width: 70%; position: relative; font-size: 15px; animation: pop 0.2s; }
+        .my-msg { background: var(--my-msg); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .other-msg { background: var(--other-msg); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg-time { font-size: 10px; opacity: 0.6; float: right; margin-left: 10px; margin-top: 5px; }
+
+        /* Реакции */
+        .reactions { position: absolute; bottom: -15px; right: 5px; background: #000; border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px; display: none; gap: 5px; font-size: 14px; }
+        .message:hover .reactions { display: flex; }
+        .reactions span { cursor: pointer; }
+        .reactions span:hover { transform: scale(1.2); }
+        .active-reaction { display: flex !important; }
+
+        .input-area { padding: 20px; background: var(--panel); border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .input-area input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #000; color: var(--text); outline: none; }
+        .input-area button { padding: 12px 20px; border-radius: 8px; background: var(--accent); color: #000; border: none; cursor: pointer; font-weight: bold; }
+
+        #profile-panel, #settings-panel { display: none; flex: 1; flex-direction: column; padding: 40px; align-items: center; background: var(--bg); }
+        .profile-card { background: var(--panel); border: 1px solid var(--border); padding: 40px; border-radius: 15px; text-align: center; width: 350px; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 20px; margin: 0 auto 20px auto; font-size: 40px; display: flex; justify-content: center; align-items: center; background: var(--accent); color: #000; background-size: cover; background-position: center; }
+
+        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
     <div id="login">
         <div class="box">
-            <h1 style="color:#00ffff;">Fluxx</h1>
+            <h1>Fluxx</h1>
             <input type="text" id="name" placeholder="Имя">
             <input type="text" id="phone" placeholder="Номер">
             <input type="password" id="pass" placeholder="Пароль">
@@ -36,13 +66,30 @@
     </div>
 
     <div id="app">
-        <div class="sidebar" id="usersList"></div>
-        <div class="chat">
-            <div id="chatHeader" style="padding:15px; background:#111; border-bottom:1px solid #333;">Выберите чат</div>
-            <div class="messages" id="msgBox"></div>
-            <div class="input-area" id="inputArea" style="display:none;">
-                <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
-                <button onclick="sendMsg()">➤</button>
+        <div class="nav-sidebar">
+            <div class="nav-icon active" onclick="switchTab('chats')">💬</div>
+            <div class="nav-icon" onclick="switchTab('profile')">👤</div>
+        </div>
+        <div class="content-area">
+            <div id="chats-panel" style="display:flex; width:100%;">
+                <div class="sidebar"><div id="usersList" style="overflow-y:auto; flex:1;"></div></div>
+                <div class="chat-area">
+                    <div class="chat-header"><span id="chatTitle">Выберите чат</span></div>
+                    <div class="chat-messages" id="msgBox"></div>
+                    <div class="input-area" id="inputArea" style="display:none;">
+                        <input type="text" id="msgInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
+                        <button onclick="sendMsg()">Отправить</button>
+                    </div>
+                </div>
+            </div>
+            <div id="profile-panel">
+                <div class="profile-card">
+                    <div class="profile-avatar" id="myAvatar">?</div>
+                    <h2 id="myName">Имя</h2>
+                    <p id="myPhone" style="color:var(--sub);">Номер</p>
+                    <input type="file" id="avatarUpload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
+                    <button onclick="document.getElementById('avatarUpload').click()" style="background:var(--panel); color:white; border:1px solid var(--border); padding:10px; border-radius:8px; cursor:pointer; margin-top:10px;">Сменить аватарку</button>
+                </div>
             </div>
         </div>
     </div>
@@ -60,10 +107,11 @@
             const data = await res.json();
             
             if (data.status === 'ok') {
-                MY_PHONE = p;
+                MY_PHONE = p; MY_NAME = n;
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
-                loadUsers(); setInterval(() => { if (CURRENT_CHAT && CURRENT_CHAT !== "999") checkMsgs(); }, 1000);
+                loadUsers(); 
+                setInterval(() => { if (CURRENT_CHAT && CURRENT_CHAT !== "999") checkMsgs(); }, 1000);
             } else { alert(data.message); }
         }
 
@@ -71,21 +119,23 @@
             const res = await fetch('/getUsers');
             const users = await res.json();
             const list = document.getElementById('usersList');
-            list.innerHTML = `<div class="user" onclick="openChat('999', 'Бот')">🤖 Бот</div>`;
+            list.innerHTML = `<div class="user-item" onclick="openChat('999', 'Бот')"><div class="avatar" style="background:#e11d48;">🤖</div><div>Fluxx Bot</div></div>`;
             
             for (const phone in users) {
                 if (phone === MY_PHONE) continue;
-                list.innerHTML += `<div class="user" onclick="openChat('${phone}', '${users[phone].name}')">${users[phone].name}</div>`;
+                const u = users[phone];
+                let avStyle = u.avatar ? `background-image: url(${u.avatar});` : '';
+                list.innerHTML += `<div class="user-item" onclick="openChat('${phone}', '${u.name}')"><div class="avatar" style="${avStyle}">${u.avatar ? '' : u.name[0].toUpperCase()}</div><div>${u.name}</div></div>`;
             }
         }
 
         function openChat(phone, name) {
             CURRENT_CHAT = phone;
-            document.getElementById('chatHeader').innerText = name;
+            document.getElementById('chatTitle').innerText = name;
             document.getElementById('inputArea').style.display = 'flex';
             document.getElementById('msgBox').innerHTML = '';
             if (phone === "999" && botMsgs.length === 0) botMsgs.push({id:1, from:"999", to:MY_PHONE, text:"Привет! Я Fluxx Bot.", time:"12:00"});
-            renderMsgs(); // Сразу рисуем
+            renderMsgs(); 
         }
 
         async function sendMsg() {
@@ -106,7 +156,7 @@
         async function addReact(id, emoji) {
             if (CURRENT_CHAT === "999") return;
             await fetch('/addReaction', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id:String(id), reaction:emoji}) });
-            checkMsgs(); // Сразу обновляем
+            checkMsgs(); 
         }
 
         async function checkMsgs() {
@@ -127,18 +177,45 @@
             box.innerHTML = '';
             messages.forEach(m => {
                 box.innerHTML += `
-                    <div class="msg ${m.from === MY_PHONE ? 'my' : 'other'}">
-                        ${m.text}
-                        <div class="reactions" style="${m.reaction ? 'display:flex;' : ''}">
+                    <div class="message ${m.from === MY_PHONE ? 'my-msg' : 'other-msg'}">
+                        ${m.text} <span class="msg-time">${m.time}</span>
+                        <div class="reactions ${m.reaction ? 'active-reaction' : ''}">
                             <span onclick="addReact('${m.id}', '❤️')">❤️</span>
                             <span onclick="addReact('${m.id}', '🔥')">🔥</span>
                             <span onclick="addReact('${m.id}', '😂')">😂</span>
-                            ${m.reaction ? m.reaction : ''}
+                            ${m.reaction ? `<span style="margin-left:5px; border-left:1px solid #555; padding-left:5px;">${m.reaction}</span>` : ''}
                         </div>
                     </div>
                 `;
             });
             box.scrollTop = box.scrollHeight;
+        }
+
+        function switchTab(tab) {
+            document.getElementById('chats-panel').style.display = 'none';
+            document.getElementById('profile-panel').style.display = 'none';
+            document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
+
+            if (tab === 'chats') { document.getElementById('chats-panel').style.display = 'flex'; document.querySelectorAll('.nav-icon')[0].classList.add('active'); }
+            if (tab === 'profile') { 
+                document.getElementById('profile-panel').style.display = 'flex'; 
+                document.querySelectorAll('.nav-icon')[1].classList.add('active'); 
+                document.getElementById('myName').innerText = MY_NAME; 
+                document.getElementById('myPhone').innerText = MY_PHONE; 
+            }
+        }
+
+        function uploadAvatar(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const avatarUrl = e.target.result;
+                fetch('/updateAvatar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({phone: MY_PHONE, avatar: avatarUrl}) });
+                document.getElementById('myAvatar').style.backgroundImage = `url(${avatarUrl})`;
+                document.getElementById('myAvatar').innerText = '';
+                loadUsers();
+            };
+            reader.readAsDataURL(file);
         }
     </script>
 </body>
