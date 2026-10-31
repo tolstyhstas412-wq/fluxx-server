@@ -1,0 +1,11 @@
+{
+  "users": {
+    "123": {
+      "name": "123",
+      "status": "vip",
+      "avatar": "blue",
+      "theme": "dark"
+    }
+  },
+  "messages": []
+}
